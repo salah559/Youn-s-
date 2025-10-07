@@ -1,23 +1,91 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8">
-<title>لوحة الحلاق</title>
-<link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <title>لوحة الحلاق</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+    /* سطور صغيرة خاصة باللوحة */
+    .login-box {max-width:400px;margin:40px auto;background:rgba(0,0,0,0.3);padding:20px;border-radius:8px;}
+    .hidden{display:none;}
+    .small-btn{padding:6px 8px;margin:4px;}
+    </style>
 </head>
 <body>
 <header>
-<img src="logo.png">
-<nav>
-<a href="annoncent.html">الإعلانات</a>
-<a href="reservation.html">الحجز</a>
-<a href="list.html">قائمة الحجز</a>
-</nav>
+    <img src="logo.png">
+    <nav>
+        <a href="annoncent.html">الإعلانات</a>
+        <a href="reservation.html">الحجز</a>
+        <a href="list.html">قائمة الحجز</a>
+    </nav>
 </header>
+
 <div class="container">
-<h2>قائمة الزبائن</h2>
-<table id="adminTable"></table>
+    <div id="login" class="login-box">
+        <h3>تسجيل دخول الحلاق</h3>
+        <label>اسم المستخدم</label><br>
+        <input id="loginUser" placeholder="..."><br><br>
+        <label>كلمة المرور</label><br>
+        <input id="loginPass" type="password" placeholder="..."><br><br>
+        <button onclick="doLogin()">دخول</button>
+        <p id="loginMsg"></p>
+    </div>
+
+    <div id="adminPanel" class="hidden">
+        <h2>لوحة الحلاق</h2>
+        <div>
+            <h3>إدارة الحساب</h3>
+            <label>اسم المستخدم الجديد</label><br>
+            <input id="newUser"><br><br>
+            <label>كلمة المرور الجديدة</label><br>
+            <input id="newPass" type="password"><br><br>
+            <button onclick="changeCredentials()" class="small-btn">حفظ</button>
+        </div>
+
+        <div style="margin-top:20px;">
+            <h3>قائمة الزبائن</h3>
+            <table id="adminTable"></table>
+        </div>
+
+        <div style="margin-top:20px;">
+            <h3>تحكم الأيام</h3>
+            <label>اختر يوم لتخطيه (نقل كل حجوزاته لليوم التالي المتاح)</label><br>
+            <select id="skipDaySelect"></select>
+            <button onclick="skipDay()" class="small-btn">تخطي اليوم</button>
+        </div>
+    </div>
 </div>
+
 <script src="js/main.js"></script>
+<script>
+// واجهة تسجيل الدخول بسيطة
+function doLogin(){
+    const u = document.getElementById('loginUser').value.trim();
+    const p = document.getElementById('loginPass').value.trim();
+    if(login(u,p)){
+        document.getElementById('login').classList.add('hidden');
+        document.getElementById('adminPanel').classList.remove('hidden');
+        renderAdminList();
+        populateSkipSelect();
+        document.getElementById('loginMsg').innerText='';
+    } else {
+        document.getElementById('loginMsg').innerText='اسم المستخدم أو كلمة المرور خاطئان.';
+    }
+}
+
+function populateSkipSelect(){
+    const days = getWorkingDays();
+    const sel = document.getElementById('skipDaySelect');
+    sel.innerHTML='';
+    days.forEach(d=>{
+        const opt = document.createElement('option');
+        opt.value = d;
+        opt.innerText = d;
+        sel.appendChild(opt);
+    });
+}
+
+</script>
 </body>
 </html>
