@@ -1,38 +1,44 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Réservation - Barber</title>
 <link rel="stylesheet" href="css/style.css">
+<script src="js/main.js" defer></script>
 </head>
 <body>
 <header class="site-header">
-  <nav class="nav">
-    <a href="annoncent.html">Annonces</a>
-    <a href="reservation.html">Réservation</a>
-    <a href="list.html">Liste</a>
-  </nav>
-  <img class="logo" src="logo.png" alt="logo" onclick="location.href='admin.html'">
+  <nav class="nav"><a href="annoncent.html">Annonces</a><a href="reservation.html">Réservation</a><a href="list.html">Liste</a></nav>
+  <img class="logo" src="logo.png" alt="logo" onclick="openLoginModal()">
 </header>
 
 <main class="container">
+  <section class="card hero"><h1>Réservation</h1><p class="lead">Réservez facilement — téléphone optionnel.</p></section>
+
   <section class="card">
-    <h2>Réserver un rendez-vous</h2>
     <form id="resForm" class="form">
-      <label>Nom *</label>
-      <input id="name" required>
-      <label>Prénom *</label>
-      <input id="surname" required>
-      <label>Téléphone (optionnel)</label>
-      <input id="phone" placeholder="Laisser vide si vous préférez">
+      <label>Nom *</label><input id="name" required>
+      <label>Prénom *</label><input id="surname" required>
+      <label>Téléphone (optionnel)</label><input id="phone" placeholder="Laisser vide si vous préférez">
       <div class="actions"><button type="submit">Réserver</button></div>
+      <p id="resInfo" class="muted"></p>
     </form>
-    <p id="resInfo" class="muted"></p>
   </section>
 </main>
 
-<script src="js/main.js"></script>
+<div id="loginModal" class="modal hidden">
+  <div class="modal-content card">
+    <h3>Connexion Coiffeur</h3>
+    <label>Nom d'utilisateur</label><input id="modalUser">
+    <label>Mot de passe</label><input id="modalPass" type="password">
+    <div class="actions" style="text-align:right;margin-top:8px;">
+      <button onclick="doModalLogin()">Se connecter</button>
+      <button onclick="closeLoginModal()" class="muted">Fermer</button>
+    </div>
+    <p id="modalMsg" class="muted"></p>
+  </div>
+</div>
+
 <script>
 document.getElementById('resForm').addEventListener('submit', function(e){
   e.preventDefault();
@@ -41,5 +47,4 @@ document.getElementById('resForm').addEventListener('submit', function(e){
   renderList();
 });
 </script>
-</body>
-</html>
+</body></html>

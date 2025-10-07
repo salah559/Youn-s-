@@ -1,34 +1,42 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Annonces - Barber</title>
 <link rel="stylesheet" href="css/style.css">
+<script src="js/main.js" defer></script>
 </head>
 <body>
 <header class="site-header">
-  <nav class="nav">
-    <a href="annoncent.html">Annonces</a>
-    <a href="reservation.html">Réservation</a>
-    <a href="list.html">Liste</a>
-  </nav>
-  <img class="logo" src="logo.png" alt="logo" onclick="location.href='admin.html'">
+  <nav class="nav"><a href="annoncent.html">Annonces</a><a href="reservation.html">Réservation</a><a href="list.html">Liste</a></nav>
+  <img class="logo" src="logo.png" alt="logo" onclick="openLoginModal()">
 </header>
 
 <main class="container">
-  <section class="hero card">
-    <h1>Salon de coiffure</h1>
-    <p class="lead">Bienvenue — suivez les annonces et réservez votre place.</p>
+  <section class="card hero">
+    <h1>Salon — Annonces</h1>
+    <p class="lead">Les annonces du salon (annonces du coiffeur et notifications système).</p>
   </section>
 
   <section class="card">
-    <h2>Annonces</h2>
+    <h2>Annonces récentes</h2>
     <div id="annList"></div>
   </section>
 </main>
 
-<script src="js/main.js"></script>
-<script>document.addEventListener('DOMContentLoaded', renderAnnonces);</script>
-</body>
-</html>
+<!-- Login Modal (shared) -->
+<div id="loginModal" class="modal hidden">
+  <div class="modal-content card">
+    <h3>Connexion Coiffeur</h3>
+    <label>Nom d'utilisateur</label><input id="modalUser">
+    <label>Mot de passe</label><input id="modalPass" type="password">
+    <div class="actions" style="text-align:right;margin-top:8px;">
+      <button onclick="doModalLogin()">Se connecter</button>
+      <button onclick="closeLoginModal()" class="muted">Fermer</button>
+    </div>
+    <p id="modalMsg" class="muted"></p>
+  </div>
+</div>
+
+<script>document.addEventListener('DOMContentLoaded', ()=>{ renderAnnonces(); });</script>
+</body></html>

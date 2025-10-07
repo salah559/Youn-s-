@@ -1,71 +1,70 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin - Barber</title>
 <link rel="stylesheet" href="css/style.css">
+<script src="js/main.js" defer></script>
 </head>
 <body>
 <header class="site-header">
-  <nav class="nav">
-    <a href="annoncent.html">Annonces</a>
-    <a href="reservation.html">Réservation</a>
-    <a href="list.html">Liste</a>
-  </nav>
-  <img class="logo" src="logo.png" alt="logo">
+  <nav class="nav"><a href="annoncent.html">Annonces</a><a href="reservation.html">Réservation</a><a href="list.html">Liste</a></nav>
+  <img class="logo" src="logo.png" alt="logo" onclick="openLoginModal()">
 </header>
 
 <main class="container">
-  <div id="loginCard" class="card small">
-    <h3>Connexion coiffeur</h3>
-    <label>Nom d'utilisateur</label><input id="loginUser">
-    <label>Mot de passe</label><input id="loginPass" type="password">
-    <div class="actions" style="text-align:center;"><button onclick="doLogin()">Se connecter</button></div>
-    <p id="loginMsg" class="muted"></p>
-  </div>
+  <section class="card hero"><h1>Administration</h1><p class="lead">Ouvrez la modal via le logo pour vous connecter.</p></section>
 
-  <div id="adminPanel" class="hidden">
-    <div class="card">
-      <h2>Tableau de bord</h2>
-      <section>
-        <h3>Créer une annonce</h3>
-        <textarea id="annText" placeholder="Écrire une annonce..."></textarea>
-        <div class="actions"><button onclick="createAnnonce()">Envoyer annonce</button></div>
-      </section>
+  <section id="adminArea" class="card hidden">
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="tab-res">Gestion réservations</button>
+      <button class="tab-btn" data-tab="tab-ann">Annonces</button>
+      <button class="tab-btn" data-tab="tab-params">Paramètres</button>
+      <button class="tab-btn" data-tab="tab-journal">Journal</button>
     </div>
 
-    <div class="card">
-      <h3>Réservations</h3>
-      <div class="table-wrap"><table id="adminTable"></table></div>
+    <div id="tab-res" class="tab panel">
+      <h3>Réservations par jour</h3>
+      <div id="adminDays"></div>
     </div>
 
-    <div class="card">
-      <h3>Gérer les jours</h3>
-      <label>Choisir un jour</label>
-      <select id="daySelect"></select>
-      <div class="actions"><button onclick="cancelDay()">Annuler jour</button> <button onclick="restoreDay()">Restaurer jour</button></div>
+    <div id="tab-ann" class="tab panel hidden">
+      <h3>Annonces (créées par le coiffeur)</h3>
+      <textarea id="annText" placeholder="Titre / message..."></textarea>
+      <div class="actions"><button onclick="createAnnonce()">Publier annonce</button></div>
+      <div id="adminAnns"></div>
     </div>
 
-    <div class="card">
-      <h3>Compte</h3>
-      <label>Nouveau nom d'utilisateur</label><input id="newUser">
+    <div id="tab-params" class="tab panel hidden">
+      <h3>Paramètres</h3>
+      <label>Nouvel utilisateur</label><input id="newUser">
       <label>Nouveau mot de passe</label><input id="newPass" type="password">
-      <div class="actions"><button onclick="changeCredentials()">Mettre à jour</button></div>
+      <div class="actions"><button onclick="changeCredentials()">Mettre à jour</button> <button onclick="resetAll()" class="muted">Réinitialiser tout</button></div>
     </div>
-  </div>
+
+    <div id="tab-journal" class="tab panel hidden">
+      <h3>Journal interne</h3>
+      <div id="journalList"></div>
+    </div>
+  </section>
 </main>
 
-<script src="js/main.js"></script>
+<!-- login modal duplicated here for direct admin access -->
+<div id="loginModal" class="modal hidden">
+  <div class="modal-content card">
+    <h3>Connexion Coiffeur</h3>
+    <label>Nom d'utilisateur</label><input id="modalUser">
+    <label>Mot de passe</label><input id="modalPass" type="password">
+    <div class="actions" style="text-align:right;margin-top:8px;">
+      <button onclick="doModalLogin()">Se connecter</button>
+      <button onclick="closeLoginModal()" class="muted">Fermer</button>
+    </div>
+    <p id="modalMsg" class="muted"></p>
+  </div>
+</div>
+
 <script>
-function doLogin(){
-  const u=document.getElementById('loginUser').value.trim(), p=document.getElementById('loginPass').value.trim();
-  if(login(u,p)){
-    document.getElementById('loginCard').classList.add('hidden');
-    document.getElementById('adminPanel').classList.remove('hidden');
-    renderAdminList(); populateDaySelect(); document.getElementById('loginMsg').innerText='';
-  } else { document.getElementById('loginMsg').innerText='Identifiants incorrects'; }
-}
+document.addEventListener('DOMContentLoaded', ()=>{ /* admin area will show after login */ });
 </script>
-</body>
-</html>
+</body></html>
