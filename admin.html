@@ -1,91 +1,72 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>لوحة الحلاق</title>
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-    /* سطور صغيرة خاصة باللوحة */
-    .login-box {max-width:400px;margin:40px auto;background:rgba(0,0,0,0.3);padding:20px;border-radius:8px;}
-    .hidden{display:none;}
-    .small-btn{padding:6px 8px;margin:4px;}
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin - Barber</title>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <header>
-    <img src="logo.png">
-    <nav>
-        <a href="annoncent.html">الإعلانات</a>
-        <a href="reservation.html">الحجز</a>
-        <a href="list.html">قائمة الحجز</a>
-    </nav>
+  <nav>
+    <a href="annoncent.html">Annonces</a>
+    <a href="reservation.html">Réservation</a>
+    <a href="list.html">Liste</a>
+  </nav>
+  <img class="logo" src="logo.png" alt="logo">
 </header>
+<main class="container">
+  <div id="loginCard" class="card small">
+    <h3>Connexion Barber</h3>
+    <label>Nom d'utilisateur</label>
+    <input id="loginUser">
+    <label>Mot de passe</label>
+    <input id="loginPass" type="password">
+    <div style="text-align:center;margin-top:8px;"><button onclick="doLogin()">Se connecter</button></div>
+    <p id="loginMsg"></p>
+  </div>
 
-<div class="container">
-    <div id="login" class="login-box">
-        <h3>تسجيل دخول الحلاق</h3>
-        <label>اسم المستخدم</label><br>
-        <input id="loginUser" placeholder="..."><br><br>
-        <label>كلمة المرور</label><br>
-        <input id="loginPass" type="password" placeholder="..."><br><br>
-        <button onclick="doLogin()">دخول</button>
-        <p id="loginMsg"></p>
+  <div id="adminPanel" class="hidden">
+    <div class="card">
+      <h2>Tableau de bord</h2>
+      <section>
+        <h3>Créer annonce</h3>
+        <textarea id="annText" placeholder="Écrire une annonce..."></textarea>
+        <div style="margin-top:8px;"><button onclick="createAnnonce()">Envoyer annonce</button></div>
+      </section>
     </div>
 
-    <div id="adminPanel" class="hidden">
-        <h2>لوحة الحلاق</h2>
-        <div>
-            <h3>إدارة الحساب</h3>
-            <label>اسم المستخدم الجديد</label><br>
-            <input id="newUser"><br><br>
-            <label>كلمة المرور الجديدة</label><br>
-            <input id="newPass" type="password"><br><br>
-            <button onclick="changeCredentials()" class="small-btn">حفظ</button>
-        </div>
-
-        <div style="margin-top:20px;">
-            <h3>قائمة الزبائن</h3>
-            <table id="adminTable"></table>
-        </div>
-
-        <div style="margin-top:20px;">
-            <h3>تحكم الأيام</h3>
-            <label>اختر يوم لتخطيه (نقل كل حجوزاته لليوم التالي المتاح)</label><br>
-            <select id="skipDaySelect"></select>
-            <button onclick="skipDay()" class="small-btn">تخطي اليوم</button>
-        </div>
+    <div class="card">
+      <h3>Gestion des réservations</h3>
+      <div class="table-wrap"><table id="adminTable"></table></div>
     </div>
-</div>
+
+    <div class="card">
+      <h3>Contrôle des jours</h3>
+      <label>Choisir jour à annuler / restaurer</label>
+      <select id="daySelect"></select>
+      <div style="margin-top:8px;"><button onclick="cancelDay()">Annuler jour</button> <button onclick="restoreDay()">Restaurer jour</button></div>
+    </div>
+
+    <div class="card">
+      <h3>Compte</h3>
+      <label>Nouveau nom d'utilisateur</label><input id="newUser">
+      <label>Nouveau mot de passe</label><input id="newPass" type="password">
+      <div style="margin-top:8px;"><button onclick="changeCredentials()">Mettre à jour</button></div>
+    </div>
+  </div>
+</main>
 
 <script src="js/main.js"></script>
 <script>
-// واجهة تسجيل الدخول بسيطة
 function doLogin(){
-    const u = document.getElementById('loginUser').value.trim();
-    const p = document.getElementById('loginPass').value.trim();
-    if(login(u,p)){
-        document.getElementById('login').classList.add('hidden');
-        document.getElementById('adminPanel').classList.remove('hidden');
-        renderAdminList();
-        populateSkipSelect();
-        document.getElementById('loginMsg').innerText='';
-    } else {
-        document.getElementById('loginMsg').innerText='اسم المستخدم أو كلمة المرور خاطئان.';
-    }
+  const u=document.getElementById('loginUser').value.trim(), p=document.getElementById('loginPass').value.trim();
+  if(login(u,p)){
+    document.getElementById('loginCard').classList.add('hidden');
+    document.getElementById('adminPanel').classList.remove('hidden');
+    renderAdminList(); populateDaySelect(); document.getElementById('loginMsg').innerText='';
+  } else { document.getElementById('loginMsg').innerText='Identifiants incorrects'; }
 }
-
-function populateSkipSelect(){
-    const days = getWorkingDays();
-    const sel = document.getElementById('skipDaySelect');
-    sel.innerHTML='';
-    days.forEach(d=>{
-        const opt = document.createElement('option');
-        opt.value = d;
-        opt.innerText = d;
-        sel.appendChild(opt);
-    });
-}
-
 </script>
 </body>
 </html>

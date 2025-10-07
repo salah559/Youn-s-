@@ -1,37 +1,44 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>حجز</title>
-    <link rel="stylesheet" href="css/style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Réservation - Barber</title>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <header>
-    <img src="logo.png" onclick="location.href='admin.html'">
-    <nav>
-        <a href="annoncent.html">الإعلانات</a>
-        <a href="reservation.html">الحجز</a>
-        <a href="list.html">قائمة الحجز</a>
-    </nav>
+  <nav>
+    <a href="annoncent.html">Annonces</a>
+    <a href="reservation.html">Réservation</a>
+    <a href="list.html">Liste</a>
+  </nav>
+  <img class="logo" src="logo.png" alt="logo" onclick="location.href='admin.html'">
 </header>
 
-<div class="container">
-    <h2>حجز موعد</h2>
+<main class="container">
+  <section class="card">
+    <h2>Réserver un rendez-vous</h2>
     <form id="resForm">
-        <input type="text" id="name" name="name" placeholder="الاسم" required><br><br>
-        <input type="text" id="surname" name="surname" placeholder="اللقب" required><br><br>
-        <input type="text" id="phone" name="phone" placeholder="رقم الهاتف" required><br><br>
-        <button type="submit">حجز</button>
+      <label>Nom</label>
+      <input id="name" required>
+      <label>Prénom</label>
+      <input id="surname" required>
+      <label>Téléphone (optionnel)</label>
+      <input id="phone" placeholder="Laisser vide si vous préférez">
+      <div style="text-align:center;margin-top:10px;"><button type="submit">Réserver</button></div>
     </form>
-    <p id="info"></p>
-</div>
+    <p id="resInfo"></p>
+  </section>
+</main>
+
 <script src="js/main.js"></script>
 <script>
-document.getElementById('resForm').onsubmit = function(e){
-    e.preventDefault();
-    addBooking(document.getElementById('name').value.trim(), document.getElementById('surname').value.trim(), document.getElementById('phone').value.trim());
-    document.getElementById('resForm').reset();
-};
+document.getElementById('resForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  addBooking(document.getElementById('name').value.trim(), document.getElementById('surname').value.trim(), document.getElementById('phone').value.trim());
+  this.reset();
+});
 </script>
 </body>
 </html>

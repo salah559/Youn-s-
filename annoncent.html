@@ -1,27 +1,33 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>الإعلانات</title>
-    <link rel="stylesheet" href="css/style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Annonces - Barber</title>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <header>
-    <img src="logo.png" onclick="location.href='admin.html'">
-    <nav>
-        <a href="annoncent.html">الإعلانات</a>
-        <a href="reservation.html">الحجز</a>
-        <a href="list.html">قائمة الحجز</a>
-    </nav>
+  <nav>
+    <a href="annoncent.html">Annonces</a>
+    <a href="reservation.html">Réservation</a>
+    <a href="list.html">Liste</a>
+  </nav>
+  <img class="logo" src="logo.png" alt="logo" onclick="location.href='admin.html'">
 </header>
-<div class="container">
-    <h2>إعلانات الحلاق</h2>
-    <p>مرحباً بكم في صالون الحلاقة. هنا ستجد جميع العروض والخصومات الحالية.</p>
-    <ul>
-        <li>خصم 20٪ على الحلاقة الأولى</li>
-        <li>حلاقة + تصفيف بسعر مميز</li>
-        <li>خدمة جديدة لتصفيف اللحية</li>
-    </ul>
-</div>
+
+<main class="container">
+  <section class="card">
+    <h1>Annonces</h1>
+    <div id="annList"></div>
+  </section>
+</main>
+
+<script src="js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', ()=>{
+  renderAnnonces();
+});
+</script>
 </body>
 </html>
