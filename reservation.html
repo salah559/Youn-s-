@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>حجز</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header>
+<img src="logo.png" onclick="location.href='admin.html'">
+<nav>
+<a href="annoncent.html">الإعلانات</a>
+<a href="reservation.html">الحجز</a>
+<a href="list.html">قائمة الحجز</a>
+</nav>
+</header>
+<div class="container">
+<h2>حجز موعد</h2>
+<form onsubmit="addBooking(name.value, surname.value, phone.value); return false;">
+<input type="text" name="name" placeholder="الاسم" required><br><br>
+<input type="text" name="surname" placeholder="اللقب" required><br><br>
+<input type="text" name="phone" placeholder="رقم الهاتف" required><br><br>
+<button type="submit">حجز</button>
+</form>
+</div>
+<script src="js/main.js"></script>
+</body>
+</html>
