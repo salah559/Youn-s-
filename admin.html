@@ -7,52 +7,51 @@
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<header>
-  <nav>
+<header class="site-header">
+  <nav class="nav">
     <a href="annoncent.html">Annonces</a>
     <a href="reservation.html">Réservation</a>
     <a href="list.html">Liste</a>
   </nav>
   <img class="logo" src="logo.png" alt="logo">
 </header>
+
 <main class="container">
   <div id="loginCard" class="card small">
-    <h3>Connexion Barber</h3>
-    <label>Nom d'utilisateur</label>
-    <input id="loginUser">
-    <label>Mot de passe</label>
-    <input id="loginPass" type="password">
-    <div style="text-align:center;margin-top:8px;"><button onclick="doLogin()">Se connecter</button></div>
-    <p id="loginMsg"></p>
+    <h3>Connexion coiffeur</h3>
+    <label>Nom d'utilisateur</label><input id="loginUser">
+    <label>Mot de passe</label><input id="loginPass" type="password">
+    <div class="actions" style="text-align:center;"><button onclick="doLogin()">Se connecter</button></div>
+    <p id="loginMsg" class="muted"></p>
   </div>
 
   <div id="adminPanel" class="hidden">
     <div class="card">
       <h2>Tableau de bord</h2>
       <section>
-        <h3>Créer annonce</h3>
+        <h3>Créer une annonce</h3>
         <textarea id="annText" placeholder="Écrire une annonce..."></textarea>
-        <div style="margin-top:8px;"><button onclick="createAnnonce()">Envoyer annonce</button></div>
+        <div class="actions"><button onclick="createAnnonce()">Envoyer annonce</button></div>
       </section>
     </div>
 
     <div class="card">
-      <h3>Gestion des réservations</h3>
+      <h3>Réservations</h3>
       <div class="table-wrap"><table id="adminTable"></table></div>
     </div>
 
     <div class="card">
-      <h3>Contrôle des jours</h3>
-      <label>Choisir jour à annuler / restaurer</label>
+      <h3>Gérer les jours</h3>
+      <label>Choisir un jour</label>
       <select id="daySelect"></select>
-      <div style="margin-top:8px;"><button onclick="cancelDay()">Annuler jour</button> <button onclick="restoreDay()">Restaurer jour</button></div>
+      <div class="actions"><button onclick="cancelDay()">Annuler jour</button> <button onclick="restoreDay()">Restaurer jour</button></div>
     </div>
 
     <div class="card">
       <h3>Compte</h3>
       <label>Nouveau nom d'utilisateur</label><input id="newUser">
       <label>Nouveau mot de passe</label><input id="newPass" type="password">
-      <div style="margin-top:8px;"><button onclick="changeCredentials()">Mettre à jour</button></div>
+      <div class="actions"><button onclick="changeCredentials()">Mettre à jour</button></div>
     </div>
   </div>
 </main>

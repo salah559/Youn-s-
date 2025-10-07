@@ -7,8 +7,8 @@
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<header>
-  <nav>
+<header class="site-header">
+  <nav class="nav">
     <a href="annoncent.html">Annonces</a>
     <a href="reservation.html">Réservation</a>
     <a href="list.html">Liste</a>
@@ -19,16 +19,16 @@
 <main class="container">
   <section class="card">
     <h2>Réserver un rendez-vous</h2>
-    <form id="resForm">
-      <label>Nom</label>
+    <form id="resForm" class="form">
+      <label>Nom *</label>
       <input id="name" required>
-      <label>Prénom</label>
+      <label>Prénom *</label>
       <input id="surname" required>
       <label>Téléphone (optionnel)</label>
       <input id="phone" placeholder="Laisser vide si vous préférez">
-      <div style="text-align:center;margin-top:10px;"><button type="submit">Réserver</button></div>
+      <div class="actions"><button type="submit">Réserver</button></div>
     </form>
-    <p id="resInfo"></p>
+    <p id="resInfo" class="muted"></p>
   </section>
 </main>
 
@@ -38,6 +38,7 @@ document.getElementById('resForm').addEventListener('submit', function(e){
   e.preventDefault();
   addBooking(document.getElementById('name').value.trim(), document.getElementById('surname').value.trim(), document.getElementById('phone').value.trim());
   this.reset();
+  renderList();
 });
 </script>
 </body>
