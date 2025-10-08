@@ -144,8 +144,40 @@ function renderAdminDays(){
   });
 }
 
-// delete booking
-function deleteBooking(id){ let bks = load(LS_KEYS.BOOK); const b = bks.find(x=>x.id===id); bks = bks.filter(x=>x.id!==id); save(LS_KEYS.BOOK,bks); pushSystem('Suppression: réservation supprimée (' + (b? b.name+' '+b.surname : id) + ')'); renderAdminDays(); renderList(); renderAnnonces(); log('Suppression reservation '+id); }
+// delete booking with auto-fill from next day
+function deleteBooking(id){ 
+  let bks = load(LS_KEYS.BOOK); 
+  const b = bks.find(x=>x.id===id); 
+  if(!b) return;
+  
+  const deletedDay = b.dayKey;
+  bks = bks.filter(x=>x.id!==id); 
+  
+  // Find first person from a future day to move to deleted spot
+  const days = getWorkingDays(180);
+  const deletedDayIndex = days.indexOf(deletedDay);
+  
+  for(let i = deletedDayIndex + 1; i < days.length; i++){
+    const nextDay = days[i];
+    const nextDayBookings = bks.filter(x => x.dayKey === nextDay);
+    
+    if(nextDayBookings.length > 0){
+      // Move first person from next day to deleted day
+      const personToMove = nextDayBookings[0];
+      personToMove.dayKey = deletedDay;
+      personToMove.dayLabel = dayLabelFromKey(deletedDay);
+      pushSystem('Auto-remplissage: ' + personToMove.name + ' déplacé de ' + dayLabelFromKey(nextDay) + ' vers ' + dayLabelFromKey(deletedDay));
+      break;
+    }
+  }
+  
+  save(LS_KEYS.BOOK,bks); 
+  pushSystem('Suppression: réservation supprimée (' + (b? b.name+' '+b.surname : id) + ')'); 
+  renderAdminDays(); 
+  renderList(); 
+  renderAnnonces(); 
+  log('Suppression reservation '+id); 
+}
 
 // promote - move earlier in array among same-day entries
 function promoteBooking(id){
