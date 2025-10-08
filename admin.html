@@ -30,6 +30,8 @@
   <section id="adminArea" class="card hidden">
     <div class="tabs">
       <button class="tab-btn active" data-tab="tab-res"><span data-i18n="admin.tab.bookings">Gestion réservations</span></button>
+      <button class="tab-btn" data-tab="tab-accounting"><span data-i18n="admin.tab.accounting">💰 Comptabilité</span></button>
+      <button class="tab-btn" data-tab="tab-debts"><span data-i18n="admin.tab.debts">📝 Dettes</span></button>
       <button class="tab-btn" data-tab="tab-ann"><span data-i18n="admin.tab.announcements">Annonces</span></button>
       <button class="tab-btn" data-tab="tab-params"><span data-i18n="admin.tab.settings">Paramètres</span></button>
       <button class="tab-btn" data-tab="tab-journal"><span data-i18n="admin.tab.journal">Journal</span></button>
@@ -41,6 +43,16 @@
       <div id="cancelledDays" style="margin-bottom: 30px;"></div>
       
       <div id="adminDays"></div>
+    </div>
+
+    <div id="tab-accounting" class="tab panel hidden">
+      <h3 style="color: var(--gold1); margin-bottom: 20px;" data-i18n="admin.accounting.title">💰 Comptabilité mensuelle</h3>
+      <div id="accountingList"></div>
+    </div>
+
+    <div id="tab-debts" class="tab panel hidden">
+      <h3 style="color: var(--gold1); margin-bottom: 20px;" data-i18n="admin.debts.title">📝 Liste des dettes</h3>
+      <div id="debtsList"></div>
     </div>
 
     <div id="tab-ann" class="tab panel hidden">

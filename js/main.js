@@ -1,5 +1,5 @@
 // js/main.js - final pro build: gold theme, modal login, admin tabs, announcements filtered
-const LS_KEYS = {CRED:'bp_creds', BOOK:'bp_bookings', CAN:'bp_cancelled', ANN:'bp_annonces', JOUR:'bp_journal'};
+const LS_KEYS = {CRED:'bp_creds', BOOK:'bp_bookings', CAN:'bp_cancelled', ANN:'bp_annonces', JOUR:'bp_journal', INCOME:'bp_income', DEBT:'bp_debt'};
 
 function nowISO(){ return new Date().toISOString(); }
 function uid(){ return 'id_' + Math.random().toString(36).slice(2,9); }
@@ -10,6 +10,8 @@ function ensureDefaults(){
   if(!localStorage.getItem(LS_KEYS.CAN)) localStorage.setItem(LS_KEYS.CAN, JSON.stringify([]));
   if(!localStorage.getItem(LS_KEYS.ANN)) localStorage.setItem(LS_KEYS.ANN, JSON.stringify([]));
   if(!localStorage.getItem(LS_KEYS.JOUR)) localStorage.setItem(LS_KEYS.JOUR, JSON.stringify([]));
+  if(!localStorage.getItem(LS_KEYS.INCOME)) localStorage.setItem(LS_KEYS.INCOME, JSON.stringify([]));
+  if(!localStorage.getItem(LS_KEYS.DEBT)) localStorage.setItem(LS_KEYS.DEBT, JSON.stringify([]));
 }
 ensureDefaults();
 
@@ -131,9 +133,11 @@ function renderAdminDays(){
       const actionsDiv=document.createElement('div'); actionsDiv.className='client-actions';
       const btnProm=document.createElement('button'); btnProm.innerHTML='<span>'+(typeof t === 'function' ? t('button.promote') : 'Promouvoir')+'</span>'; btnProm.onclick=()=> promoteBooking(c.id);
       const btnIn=document.createElement('button'); btnIn.innerHTML='<span>'+(typeof t === 'function' ? t('button.inprogress') : 'En cours')+'</span>'; btnIn.onclick=()=> setInProgress(c.id);
-      const btnDel=document.createElement('button'); btnDel.innerHTML='<span>'+(typeof t === 'function' ? t('button.delete') : 'Supprimer')+'</span>'; btnDel.onclick=()=> { if(confirm(typeof t === 'function' ? t('button.delete') + '?' : 'Supprimer?')) deleteBooking(c.id); };
+      const btnPaid=document.createElement('button'); btnPaid.innerHTML='<span>'+(typeof t === 'function' ? t('button.paid') : '💰 Payé')+'</span>'; btnPaid.style.background='rgba(40, 167, 69, 0.8)'; btnPaid.onclick=()=> { const amount = prompt('Montant (DA)', '100'); if(amount) markAsPaid(c.id, parseInt(amount)); };
+      const btnDebt=document.createElement('button'); btnDebt.innerHTML='<span>'+(typeof t === 'function' ? t('button.debt') : '📝 Dين')+'</span>'; btnDebt.style.background='rgba(220, 53, 69, 0.8)'; btnDebt.onclick=()=> { if(confirm('Marquer comme dette?')) markAsDebt(c.id); };
       const btnEdit=document.createElement('button'); btnEdit.innerHTML='<span>'+(typeof t === 'function' ? t('button.edit') : 'Éditer')+'</span>'; btnEdit.onclick=()=> editBooking(c.id);
-      actionsDiv.appendChild(btnProm); actionsDiv.appendChild(btnIn); actionsDiv.appendChild(btnEdit); actionsDiv.appendChild(btnDel);
+      const btnDel=document.createElement('button'); btnDel.innerHTML='<span>'+(typeof t === 'function' ? t('button.delete') : 'Supprimer')+'</span>'; btnDel.onclick=()=> { if(confirm(typeof t === 'function' ? t('button.delete') + '?' : 'Supprimer?')) deleteBooking(c.id); };
+      actionsDiv.appendChild(btnProm); actionsDiv.appendChild(btnIn); actionsDiv.appendChild(btnPaid); actionsDiv.appendChild(btnDebt); actionsDiv.appendChild(btnEdit); actionsDiv.appendChild(btnDel);
       row.appendChild(nameDiv); row.appendChild(actionsDiv); block.appendChild(row);
     });
     container.appendChild(block);
@@ -174,6 +178,254 @@ function editBooking(id){
 
 // set in progress
 function setInProgress(id){ const bks = load(LS_KEYS.BOOK); const b = bks.find(x=>x.id===id); if(!b) return; bks.forEach(x=> x.inProgress=false); b.inProgress = true; save(LS_KEYS.BOOK,bks); pushSystem('État: '+b.name+' en cours de coupe'); renderAdminDays(); renderList(); renderAnnonces(); }
+
+// mark as paid and add to income
+function markAsPaid(id, price = 100){
+  const bks = load(LS_KEYS.BOOK);
+  const b = bks.find(x=>x.id===id);
+  if(!b) return;
+  
+  const income = load(LS_KEYS.INCOME);
+  income.push({
+    id: uid(),
+    bookingId: id,
+    clientName: b.name + ' ' + b.surname,
+    dayKey: b.dayKey,
+    amount: price,
+    ts: nowISO()
+  });
+  save(LS_KEYS.INCOME, income);
+  
+  // delete booking after payment
+  const newBks = bks.filter(x=>x.id!==id);
+  save(LS_KEYS.BOOK, newBks);
+  
+  log('Paiement reçu: ' + b.name + ' ' + b.surname + ' - ' + price + ' DA');
+  renderAdminDays();
+  renderList();
+  renderAccounting();
+}
+
+// mark as debt
+function markAsDebt(id){
+  const bks = load(LS_KEYS.BOOK);
+  const b = bks.find(x=>x.id===id);
+  if(!b) return;
+  
+  const debts = load(LS_KEYS.DEBT);
+  debts.push({
+    id: uid(),
+    bookingId: id,
+    name: b.name,
+    surname: b.surname,
+    phone: b.phone || '',
+    dayKey: b.dayKey,
+    dayLabel: b.dayLabel,
+    amount: 100,
+    ts: nowISO()
+  });
+  save(LS_KEYS.DEBT, debts);
+  
+  // delete booking after marking as debt
+  const newBks = bks.filter(x=>x.id!==id);
+  save(LS_KEYS.BOOK, newBks);
+  
+  log('Dette ajoutée: ' + b.name + ' ' + b.surname);
+  renderAdminDays();
+  renderList();
+  renderDebts();
+}
+
+// pay debt
+function payDebt(debtId, amount){
+  const debts = load(LS_KEYS.DEBT);
+  const debt = debts.find(x=>x.id===debtId);
+  if(!debt) return;
+  
+  const income = load(LS_KEYS.INCOME);
+  income.push({
+    id: uid(),
+    bookingId: debt.bookingId,
+    clientName: debt.name + ' ' + debt.surname,
+    dayKey: debt.dayKey,
+    amount: amount || debt.amount,
+    ts: nowISO(),
+    wasDebt: true
+  });
+  save(LS_KEYS.INCOME, income);
+  
+  // remove debt
+  const newDebts = debts.filter(x=>x.id!==debtId);
+  save(LS_KEYS.DEBT, newDebts);
+  
+  log('Dette payée: ' + debt.name + ' ' + debt.surname + ' - ' + amount + ' DA');
+  renderDebts();
+  renderAccounting();
+}
+
+// delete debt
+function deleteDebt(debtId){
+  let debts = load(LS_KEYS.DEBT);
+  const debt = debts.find(x=>x.id===debtId);
+  debts = debts.filter(x=>x.id!==debtId);
+  save(LS_KEYS.DEBT, debts);
+  log('Dette supprimée: ' + (debt? debt.name + ' ' + debt.surname : debtId));
+  renderDebts();
+}
+
+// render debts list
+function renderDebts(){
+  const container = document.getElementById('debtsList');
+  if(!container) return;
+  
+  const debts = load(LS_KEYS.DEBT).sort((a,b)=> b.ts.localeCompare(a.ts));
+  container.innerHTML = '';
+  
+  if(debts.length === 0){
+    container.innerHTML = '<p class="muted">' + (typeof t === 'function' ? t('debts.none') : 'Aucune dette') + '</p>';
+    return;
+  }
+  
+  let totalDebt = 0;
+  debts.forEach(d => {
+    totalDebt += d.amount;
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.background = 'rgba(220, 53, 69, 0.1)';
+    card.style.borderLeft = '3px solid rgba(220, 53, 69, 0.5)';
+    
+    const date = new Date(d.ts);
+    const dateStr = date.toLocaleDateString('fr-FR');
+    
+    card.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: start; gap: 15px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 200px;">
+          <div style="font-size: 18px; font-weight: bold; color: var(--gold-bright); margin-bottom: 8px;">
+            ${d.name} ${d.surname}
+          </div>
+          <div class="muted" style="font-size: 13px; margin-bottom: 5px;">
+            📅 ${d.dayLabel}
+          </div>
+          <div class="muted" style="font-size: 13px; margin-bottom: 5px;">
+            📞 ${d.phone || '---'}
+          </div>
+          <div style="color: #dc3545; font-weight: bold; font-size: 16px; margin-top: 10px;">
+            💰 ${d.amount} DA
+          </div>
+          <div class="muted" style="font-size: 12px; margin-top: 8px;">
+            Enregistré le ${dateStr}
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-direction: column;">
+          <button onclick="payDebt('${d.id}', ${d.amount})" style="background: rgba(40, 167, 69, 0.8);">
+            <span>${typeof t === 'function' ? t('debts.pay') : 'Payer'}</span>
+          </button>
+          <button onclick="if(confirm('Supprimer?')) deleteDebt('${d.id}')" style="background: rgba(220, 53, 69, 0.8);">
+            <span>${typeof t === 'function' ? t('button.delete') : 'Supprimer'}</span>
+          </button>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+  
+  // total debt summary
+  const summary = document.createElement('div');
+  summary.className = 'card';
+  summary.style.background = 'rgba(220, 53, 69, 0.2)';
+  summary.style.borderLeft = '4px solid #dc3545';
+  summary.innerHTML = `
+    <div style="font-size: 20px; font-weight: bold; color: var(--gold-bright);">
+      📊 ${typeof t === 'function' ? t('debts.total') : 'Total des dettes'}: <span style="color: #dc3545;">${totalDebt} DA</span>
+    </div>
+  `;
+  container.insertBefore(summary, container.firstChild);
+}
+
+// render accounting (monthly income)
+function renderAccounting(){
+  const container = document.getElementById('accountingList');
+  if(!container) return;
+  
+  const income = load(LS_KEYS.INCOME).sort((a,b)=> b.ts.localeCompare(a.ts));
+  container.innerHTML = '';
+  
+  if(income.length === 0){
+    container.innerHTML = '<p class="muted">' + (typeof t === 'function' ? t('accounting.none') : 'Aucun revenu enregistré') + '</p>';
+    return;
+  }
+  
+  // group by month
+  const byMonth = {};
+  income.forEach(inc => {
+    const date = new Date(inc.ts);
+    const monthKey = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
+    if(!byMonth[monthKey]) byMonth[monthKey] = [];
+    byMonth[monthKey].push(inc);
+  });
+  
+  // render each month
+  Object.keys(byMonth).sort().reverse().forEach(monthKey => {
+    const items = byMonth[monthKey];
+    let total = 0;
+    
+    const monthBlock = document.createElement('div');
+    monthBlock.className = 'card';
+    monthBlock.style.marginBottom = '25px';
+    
+    const [year, month] = monthKey.split('-');
+    const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+    const monthName = monthNames[parseInt(month) - 1];
+    
+    let itemsHTML = '';
+    items.forEach(inc => {
+      total += inc.amount;
+      const date = new Date(inc.ts);
+      const dateStr = date.toLocaleDateString('fr-FR');
+      const debtBadge = inc.wasDebt ? '<span class="badge" style="background: rgba(40, 167, 69, 0.8); margin-left: 8px;">Dette payée</span>' : '';
+      
+      itemsHTML += `
+        <div style="padding: 12px; border-bottom: 1px solid rgba(202, 164, 60, 0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <span style="font-weight: bold;">${inc.clientName}</span>
+            <span class="muted" style="margin-left: 10px; font-size: 13px;">${dateStr}</span>
+            ${debtBadge}
+          </div>
+          <div style="color: var(--gold-bright); font-weight: bold; font-size: 16px;">
+            +${inc.amount} DA
+          </div>
+        </div>
+      `;
+    });
+    
+    monthBlock.innerHTML = `
+      <div style="background: linear-gradient(135deg, rgba(202, 164, 60, 0.2), rgba(169, 135, 50, 0.2)); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <h3 style="color: var(--gold-bright); margin: 0;">📅 ${monthName} ${year}</h3>
+          <div style="font-size: 24px; font-weight: bold; color: var(--gold-bright);">
+            💰 ${total} DA
+          </div>
+        </div>
+      </div>
+      <div>${itemsHTML}</div>
+    `;
+    
+    container.appendChild(monthBlock);
+  });
+  
+  // grand total
+  const grandTotal = income.reduce((sum, inc) => sum + inc.amount, 0);
+  const totalCard = document.createElement('div');
+  totalCard.className = 'card';
+  totalCard.style.background = 'linear-gradient(135deg, rgba(202, 164, 60, 0.3), rgba(169, 135, 50, 0.3))';
+  totalCard.style.borderLeft = '4px solid var(--gold-bright)';
+  totalCard.innerHTML = `
+    <div style="font-size: 22px; font-weight: bold; color: var(--gold-bright); text-align: center;">
+      🏆 ${typeof t === 'function' ? t('accounting.grandtotal') : 'Total général'}: ${grandTotal} DA
+    </div>
+  `;
+  container.insertBefore(totalCard, container.firstChild);
+}
 
 // cancel day: snapshot and reassign
 function cancelDayByKey(dayKey){
@@ -281,7 +533,7 @@ function activateAdminArea(){
   const area = document.getElementById('adminArea'); if(area) area.classList.remove('hidden');
   // if on admin.html, also open first tab and render data
   setupTabs();
-  renderCancelledDays(); renderAdminDays(); renderAdminAnns(); renderJournal(); populateDaySelect();
+  renderCancelledDays(); renderAdminDays(); renderAdminAnns(); renderDebts(); renderAccounting(); renderJournal(); populateDaySelect();
   const welcomeMsg = typeof t === 'function' ? t('login.welcome') : 'مرحباً، تم تسجيل دخولك كحلاق';
   alert(welcomeMsg);
 }
@@ -336,4 +588,4 @@ function cleanPastDays(){
 }
 
 // initial renderers for pages
-window.addEventListener('DOMContentLoaded', ()=>{ cleanPastDays(); renderList(); renderAnnonces(); setupTabs(); try{ renderCancelledDays(); renderAdminDays(); renderAdminAnns(); populateDaySelect(); }catch(e){} });
+window.addEventListener('DOMContentLoaded', ()=>{ cleanPastDays(); renderList(); renderAnnonces(); setupTabs(); try{ renderCancelledDays(); renderAdminDays(); renderAdminAnns(); renderDebts(); renderAccounting(); populateDaySelect(); }catch(e){} });
