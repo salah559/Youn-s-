@@ -304,5 +304,31 @@ function renderJournal(){ const el = document.getElementById('journalList'); if(
 // reset all storage (admin)
 function resetAll(){ if(!confirm('Réinitialiser toutes les données?')) return; localStorage.removeItem(LS_KEYS.BOOK); localStorage.removeItem(LS_KEYS.CAN); localStorage.removeItem(LS_KEYS.ANN); localStorage.removeItem(LS_KEYS.JOUR); ensureDefaults(); renderList(); renderAdminDays(); renderAnnonces(); renderAdminAnns(); renderJournal(); populateDaySelect(); alert('Réinitialisé'); }
 
+// clean up past days automatically
+function cleanPastDays(){
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayKey = dayKeyFromDate(today);
+  
+  let bks = load(LS_KEYS.BOOK);
+  const removed = bks.filter(x => x.dayKey < todayKey);
+  
+  if(removed.length > 0){
+    bks = bks.filter(x => x.dayKey >= todayKey);
+    save(LS_KEYS.BOOK, bks);
+    log(`Nettoyage automatique: ${removed.length} réservation(s) passée(s) supprimée(s)`);
+  }
+  
+  // clean cancelled days that are in the past
+  let cancelled = load(LS_KEYS.CAN);
+  const removedCancelled = cancelled.filter(x => x.dayKey < todayKey);
+  
+  if(removedCancelled.length > 0){
+    cancelled = cancelled.filter(x => x.dayKey >= todayKey);
+    save(LS_KEYS.CAN, cancelled);
+    log(`Nettoyage automatique: ${removedCancelled.length} jour(s) annulé(s) passé(s) supprimé(s)`);
+  }
+}
+
 // initial renderers for pages
-window.addEventListener('DOMContentLoaded', ()=>{ renderList(); renderAnnonces(); setupTabs(); try{ renderCancelledDays(); renderAdminDays(); renderAdminAnns(); populateDaySelect(); }catch(e){} });
+window.addEventListener('DOMContentLoaded', ()=>{ cleanPastDays(); renderList(); renderAnnonces(); setupTabs(); try{ renderCancelledDays(); renderAdminDays(); renderAdminAnns(); populateDaySelect(); }catch(e){} });
