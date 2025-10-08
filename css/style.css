@@ -120,12 +120,22 @@ body::before {
   cursor: pointer;
   font-weight: 600;
   transition: all 0.3s ease;
+  min-width: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 .lang-btn:hover {
   background: linear-gradient(135deg, var(--gold-bright), var(--gold2));
   color: #0b0b0b;
   transform: translateY(-2px);
+}
+
+.lang-btn::before {
+  content: '🌐';
+  font-size: 16px;
 }
 
 .container {
@@ -483,33 +493,41 @@ button span {
 
 @media(max-width: 760px) {
   .site-header {
-    padding: 15px;
+    padding: 12px 15px;
+    flex-wrap: wrap;
+    gap: 12px;
   }
   
   .logo {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
   }
   
   .hero h1 {
-    font-size: 28px;
+    font-size: 24px;
   }
   
   .container {
-    padding: 15px;
+    padding: 10px;
+    margin: 20px auto;
   }
   
   .card {
-    padding: 20px;
+    padding: 16px;
+    margin-bottom: 15px;
   }
   
   .nav {
-    gap: 8px;
+    gap: 6px;
+    flex: 1 1 100%;
+    order: 3;
   }
   
   .nav a {
-    padding: 8px 12px;
-    font-size: 14px;
+    padding: 8px 10px;
+    font-size: 13px;
+    flex: 1;
+    text-align: center;
   }
   
   .actions {
@@ -522,24 +540,67 @@ button span {
     gap: 6px;
   }
   
+  .client-actions button {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  
   .tabs {
     gap: 6px;
   }
   
   .tab-btn {
-    padding: 10px 14px;
+    padding: 8px 12px;
+    font-size: 12px;
+    flex: 1;
+  }
+  
+  .lang-btn {
+    padding: 8px 12px;
     font-size: 13px;
+    min-width: 70px;
+  }
+  
+  .modal-content {
+    margin: 10px;
+  }
+  
+  input, textarea, select {
+    font-size: 16px;
   }
 }
 
 @media(max-width: 480px) {
   .hero h1 {
-    font-size: 24px;
+    font-size: 20px;
+  }
+  
+  .lead {
+    font-size: 14px;
   }
   
   .day-title {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
+    font-size: 16px;
+  }
+  
+  .day-block {
+    padding: 15px;
+  }
+  
+  .client-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .client-actions {
+    width: 100%;
+  }
+  
+  .client-actions button {
+    flex: 1;
   }
 }

@@ -154,6 +154,19 @@ function setLanguage(lang) {
     document.documentElement.setAttribute('lang', lang);
     document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
     updatePageTexts();
+    updateLangButton();
+}
+
+function toggleLanguage() {
+    const newLang = currentLang === 'fr' ? 'ar' : 'fr';
+    setLanguage(newLang);
+}
+
+function updateLangButton() {
+    const btn = document.getElementById('langToggle');
+    if (btn) {
+        btn.textContent = currentLang === 'fr' ? 'العربية' : 'Français';
+    }
 }
 
 function updatePageTexts() {
@@ -178,4 +191,5 @@ function updatePageTexts() {
 // Initialize language on page load
 document.addEventListener('DOMContentLoaded', () => {
     setLanguage(currentLang);
+    updateLangButton();
 });
