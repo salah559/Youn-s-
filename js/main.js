@@ -159,7 +159,9 @@ function cancelDayByKey(dayKey){
     }
     if(!placed){ alert('Impossible de reprogrammer certains clients automatiquement'); break; }
   }
-  save(LS_KEYS.BOOK,bks); pushSystem('Annulation: jour ' + dayLabelFromKey(dayKey) + ' annulé et reprogrammé'); renderAdminDays(); renderList(); renderAnnonces(); populateDaySelect();
+  save(LS_KEYS.BOOK,bks); 
+  pushSystem('🚫 Jour annulé: ' + dayLabelFromKey(dayKey) + ' - Les clients ont été reprogrammés automatiquement'); 
+  renderAdminDays(); renderList(); renderAnnonces(); populateDaySelect();
 }
 
 // restore day (if capacity allows)
@@ -173,7 +175,9 @@ function restoreDayByKey(dayKey){
   if(existing + snapshot.bookings.length > capacity(dayKey)) return alert('Pas assez de place pour restaurer');
   // restore with new ids
   snapshot.bookings.forEach(ob => { const copy = Object.assign({}, ob); copy.id = uid(); copy.inProgress = false; bks.push(copy); });
-  cancelled.splice(idx,1); save(LS_KEYS.CAN, cancelled); save(LS_KEYS.BOOK, bks); pushSystem('Restauration: jour ' + dayLabelFromKey(dayKey) + ' restauré'); renderAdminDays(); renderList(); renderAnnonces(); populateDaySelect();
+  cancelled.splice(idx,1); save(LS_KEYS.CAN, cancelled); save(LS_KEYS.BOOK, bks); 
+  pushSystem('✅ Jour restauré: ' + dayLabelFromKey(dayKey) + ' - Les réservations ont été rétablies'); 
+  renderAdminDays(); renderList(); renderAnnonces(); populateDaySelect();
 }
 
 // create annonce (admin)
@@ -182,13 +186,20 @@ function createAnnonce(){ const t = document.getElementById('annText').value.tri
 // system annonce helper
 function pushSystem(text){ pushAnnonce(text,'system'); log('SYS: '+text); }
 
-// render annonces (public page shows only type user and system)
+// render annonces (public page shows only admin-created user annonces and system notifications)
 function renderAnnonces(){
   const list = document.getElementById('annList'); if(!list) return;
   const anns = load(LS_KEYS.ANN).filter(a=> a.type==='user' || a.type==='system');
   list.innerHTML='';
   if(anns.length===0){ list.innerHTML='<p class="muted">'+(typeof t === 'function' ? t('announcements.none') : 'Aucune annonce')+'</p>'; return; }
-  anns.forEach(a=>{ const node=document.createElement('div'); node.className='card'; const d=new Date(a.ts); node.innerHTML = `<div style="font-size:13px;color:var(--muted)">${(a.type==='system'?'[SYSTEM] ':'')}${d.toLocaleString()}</div><p>${a.text}</p>`; list.appendChild(node); });
+  anns.forEach(a=>{ 
+    const node=document.createElement('div'); 
+    node.className='card'; 
+    const d=new Date(a.ts); 
+    const prefix = a.type === 'system' ? '<strong style="color: var(--gold-bright);">[SYSTÈME]</strong> ' : '';
+    node.innerHTML = `<div style="font-size:13px;color:var(--muted);margin-bottom:8px;">${d.toLocaleString('fr-FR', {dateStyle: 'full', timeStyle: 'short'})}</div><p>${prefix}${a.text}</p>`; 
+    list.appendChild(node); 
+  });
 }
 
 // render admin-only annonces (all user created)
@@ -196,7 +207,8 @@ function renderAdminAnns(){
   const el = document.getElementById('adminAnns'); if(!el) return;
   const anns = load(LS_KEYS.ANN).filter(a=> a.type==='user');
   el.innerHTML='';
-  anns.forEach(a=>{ const node=document.createElement('div'); node.className='card'; const d=new Date(a.ts); node.innerHTML = `<div style="font-size:13px;color:var(--muted)">${d.toLocaleString()}</div><p>${a.text}</p>`; el.appendChild(node); });
+  if(anns.length===0){ el.innerHTML='<p class="muted">Aucune annonce créée</p>'; return; }
+  anns.forEach(a=>{ const node=document.createElement('div'); node.className='card'; const d=new Date(a.ts); node.innerHTML = `<div style="font-size:13px;color:var(--muted);margin-bottom:8px;">${d.toLocaleString('fr-FR', {dateStyle: 'full', timeStyle: 'short'})}</div><p>${a.text}</p>`; el.appendChild(node); });
 }
 
 // populate day select for admin restore/cancel lists
