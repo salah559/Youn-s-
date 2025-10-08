@@ -61,10 +61,10 @@ function addBooking(name,surname,phone){
   alert('Aucun créneau disponible');
 }
 
-// RENDER PUBLIC LIST grouped by day, show En cours badge
+// RENDER PUBLIC LIST grouped by day, show En cours badge (hide completed)
 function renderList(){
   const container=document.getElementById('publicDays'); if(!container) return;
-  const bks = load(LS_KEYS.BOOK).slice().sort((a,b)=> a.dayKey.localeCompare(b.dayKey) || a.createdAt.localeCompare(b.createdAt));
+  const bks = load(LS_KEYS.BOOK).filter(x => !x.completed).slice().sort((a,b)=> a.dayKey.localeCompare(b.dayKey) || a.createdAt.localeCompare(b.createdAt));
   const days = [...new Set(bks.map(x=>x.dayKey))];
   container.innerHTML='';
   days.forEach(k=>{
@@ -115,10 +115,10 @@ function renderCancelledDays(){
   }
 }
 
-// ADMIN helpers render days with actions, phone visible here
+// ADMIN helpers render days with actions, phone visible here (hide completed)
 function renderAdminDays(){
   const container=document.getElementById('adminDays'); if(!container) return;
-  const bks = load(LS_KEYS.BOOK).slice().sort((a,b)=> a.dayKey.localeCompare(b.dayKey) || a.createdAt.localeCompare(b.createdAt));
+  const bks = load(LS_KEYS.BOOK).filter(x => !x.completed).slice().sort((a,b)=> a.dayKey.localeCompare(b.dayKey) || a.createdAt.localeCompare(b.createdAt));
   const days = getWorkingDays(90);
   container.innerHTML='';
   days.forEach(k=>{
@@ -228,9 +228,10 @@ function markAsPaid(id, price = 100){
   });
   save(LS_KEYS.INCOME, income);
   
-  // delete booking after payment
-  const newBks = bks.filter(x=>x.id!==id);
-  save(LS_KEYS.BOOK, newBks);
+  // Mark as completed instead of deleting (keeps the spot occupied)
+  b.completed = true;
+  b.inProgress = false;
+  save(LS_KEYS.BOOK, bks);
   
   log('Paiement reçu: ' + b.name + ' ' + b.surname + ' - ' + price + ' DA');
   renderAdminDays();
@@ -258,9 +259,10 @@ function markAsDebt(id){
   });
   save(LS_KEYS.DEBT, debts);
   
-  // delete booking after marking as debt
-  const newBks = bks.filter(x=>x.id!==id);
-  save(LS_KEYS.BOOK, newBks);
+  // Mark as completed instead of deleting (keeps the spot occupied)
+  b.completed = true;
+  b.inProgress = false;
+  save(LS_KEYS.BOOK, bks);
   
   log('Dette ajoutée: ' + b.name + ' ' + b.surname);
   renderAdminDays();
