@@ -67,17 +67,17 @@ function renderAdminDays(){
   days.forEach(k=>{
     const items = bks.filter(x=>x.dayKey===k);
     const block=document.createElement('div'); block.className='day-block';
-    const title=document.createElement('div'); title.className='day-title'; title.innerHTML=`<strong>${dayLabelFromKey(k)}</strong><div><button onclick="cancelDayByKey('${k}')">Annuler jour</button></div>`;
+    const title=document.createElement('div'); title.className='day-title'; title.innerHTML=`<strong>${dayLabelFromKey(k)}</strong><div><button onclick="cancelDayByKey('${k}')"><span>Annuler jour</span></button></div>`;
     block.appendChild(title);
     if(items.length===0){ const p=document.createElement('p'); p.className='muted'; p.innerText='Aucun client'; block.appendChild(p); }
     items.forEach((c,idx)=>{
       const row=document.createElement('div'); row.className='client-row' + (c.inProgress? ' highlight':'');
       const nameDiv=document.createElement('div'); nameDiv.className='client-name'; nameDiv.innerText = (idx+1) + '. ' + c.name + ' ' + c.surname + (c.phone? ' • ' + c.phone : ' • ---');
       const actionsDiv=document.createElement('div'); actionsDiv.className='client-actions';
-      const btnProm=document.createElement('button'); btnProm.innerText='Promouvoir'; btnProm.onclick=()=> promoteBooking(c.id);
-      const btnIn=document.createElement('button'); btnIn.innerText='En cours'; btnIn.onclick=()=> setInProgress(c.id);
-      const btnDel=document.createElement('button'); btnDel.innerText='Supprimer'; btnDel.onclick=()=> { if(confirm('Supprimer?')) deleteBooking(c.id); };
-      const btnEdit=document.createElement('button'); btnEdit.innerText='Éditer'; btnEdit.onclick=()=> editBooking(c.id);
+      const btnProm=document.createElement('button'); btnProm.innerHTML='<span>Promouvoir</span>'; btnProm.onclick=()=> promoteBooking(c.id);
+      const btnIn=document.createElement('button'); btnIn.innerHTML='<span>En cours</span>'; btnIn.onclick=()=> setInProgress(c.id);
+      const btnDel=document.createElement('button'); btnDel.innerHTML='<span>Supprimer</span>'; btnDel.onclick=()=> { if(confirm('Supprimer?')) deleteBooking(c.id); };
+      const btnEdit=document.createElement('button'); btnEdit.innerHTML='<span>Éditer</span>'; btnEdit.onclick=()=> editBooking(c.id);
       actionsDiv.appendChild(btnProm); actionsDiv.appendChild(btnIn); actionsDiv.appendChild(btnEdit); actionsDiv.appendChild(btnDel);
       row.appendChild(nameDiv); row.appendChild(actionsDiv); block.appendChild(row);
     });
@@ -211,6 +211,15 @@ function activateAdminArea(){
 function setupTabs(){
   const btns = document.querySelectorAll('.tab-btn'); btns.forEach(b=> b.onclick = function(){ document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active')); this.classList.add('active'); const t=this.dataset.tab; document.querySelectorAll('.tab.panel').forEach(p=>p.classList.add('hidden')); document.getElementById(t).classList.remove('hidden'); });
 }
+
+function wrapNavLinks(){
+  document.querySelectorAll('.nav a').forEach(link => {
+    if (!link.querySelector('span')) {
+      link.innerHTML = '<span>' + link.textContent + '</span>';
+    }
+  });
+}
+window.addEventListener('DOMContentLoaded', wrapNavLinks);
 
 // change credentials
 function changeCredentials(){ const nu=document.getElementById('newUser').value.trim(); const np=document.getElementById('newPass').value.trim(); if(!nu||!np) return alert('Remplir'); saveCreds({user:nu, pass:np}); alert('Identifiants mis à jour'); log('Changement cred'); }

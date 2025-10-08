@@ -3,68 +3,87 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Salon - Administration</title>
 <link rel="stylesheet" href="css/style.css">
 <script src="js/main.js" defer></script>
+<script type="module" src="js/background3d.js"></script>
 </head>
 <body>
 <header class="site-header">
-  <nav class="nav"><a href="annoncent.html">Annonces</a><a href="reservation.html">Réservation</a><a href="list.html">Liste</a></nav>
+  <nav class="nav">
+    <a href="annoncent.html"><span>Annonces</span></a>
+    <a href="reservation.html"><span>Réservation</span></a>
+    <a href="list.html"><span>Liste</span></a>
+  </nav>
   <img class="logo" src="logo.png" alt="logo" onclick="openLoginModal()">
 </header>
 
 <main class="container">
-  <section class="card hero"><h1>Administration</h1><p class="lead">Ouvrez la modal via le logo pour vous connecter.</p></section>
+  <section class="card hero">
+    <h1>Administration</h1>
+    <p class="lead">Ouvrez la modal via le logo pour vous connecter.</p>
+  </section>
 
   <section id="adminArea" class="card hidden">
-    <!-- Tabs -->
     <div class="tabs">
-      <button class="tab-btn active" data-tab="tab-res">Gestion réservations</button>
-      <button class="tab-btn" data-tab="tab-ann">Annonces</button>
-      <button class="tab-btn" data-tab="tab-params">Paramètres</button>
-      <button class="tab-btn" data-tab="tab-journal">Journal</button>
+      <button class="tab-btn active" data-tab="tab-res"><span>Gestion réservations</span></button>
+      <button class="tab-btn" data-tab="tab-ann"><span>Annonces</span></button>
+      <button class="tab-btn" data-tab="tab-params"><span>Paramètres</span></button>
+      <button class="tab-btn" data-tab="tab-journal"><span>Journal</span></button>
     </div>
 
     <div id="tab-res" class="tab panel">
-      <h3>Réservations par jour</h3>
+      <h3 style="color: var(--gold1); margin-bottom: 20px;">Réservations par jour</h3>
       <div id="adminDays"></div>
     </div>
 
     <div id="tab-ann" class="tab panel hidden">
-      <h3>Annonces (créées par le coiffeur)</h3>
+      <h3 style="color: var(--gold1); margin-bottom: 20px;">Annonces (créées par le coiffeur)</h3>
       <textarea id="annText" placeholder="Titre / message..."></textarea>
-      <div class="actions"><button onclick="createAnnonce()">Publier annonce</button></div>
-      <div id="adminAnns"></div>
+      <div class="actions">
+        <button onclick="createAnnonce()"><span>Publier annonce</span></button>
+      </div>
+      <div id="adminAnns" style="margin-top: 20px;"></div>
     </div>
 
     <div id="tab-params" class="tab panel hidden">
-      <h3>Paramètres</h3>
-      <label>Nouvel utilisateur</label><input id="newUser">
-      <label>Nouveau mot de passe</label><input id="newPass" type="password">
-      <div class="actions"><button onclick="changeCredentials()">Mettre à jour</button> <button onclick="resetAll()" class="muted">Réinitialiser tout</button></div>
+      <h3 style="color: var(--gold1); margin-bottom: 20px;">Paramètres</h3>
+      <label>Nouvel utilisateur</label>
+      <input id="newUser">
+      <label>Nouveau mot de passe</label>
+      <input id="newPass" type="password">
+      <div class="actions">
+        <button onclick="changeCredentials()"><span>Mettre à jour</span></button>
+        <button onclick="resetAll()" style="background: rgba(220, 53, 69, 0.8); margin-left: 10px;"><span>Réinitialiser tout</span></button>
+      </div>
     </div>
 
     <div id="tab-journal" class="tab panel hidden">
-      <h3>Journal interne</h3>
+      <h3 style="color: var(--gold1); margin-bottom: 20px;">Journal interne</h3>
       <div id="journalList"></div>
     </div>
   </section>
 </main>
 
-<!-- login modal duplicated here for direct admin access -->
 <div id="loginModal" class="modal hidden">
   <div class="modal-content card">
-    <h3>Connexion Coiffeur</h3>
-    <label>Nom d'utilisateur</label><input id="modalUser">
-    <label>Mot de passe</label><input id="modalPass" type="password">
-    <div class="actions" style="text-align:right;margin-top:8px;">
-      <button onclick="doModalLogin()">Se connecter</button>
-      <button onclick="closeLoginModal()" class="muted">Fermer</button>
-    </div>
-    <p id="modalMsg" class="muted"></p>
+    <h3 style="color: var(--gold-bright); margin-bottom: 20px;">Connexion Coiffeur</h3>
+    <form onsubmit="event.preventDefault(); doModalLogin();">
+      <label>Nom d'utilisateur</label>
+      <input id="modalUser" autocomplete="username">
+      <label>Mot de passe</label>
+      <input id="modalPass" type="password" autocomplete="current-password">
+      <div class="actions" style="margin-top: 20px;">
+        <button type="submit"><span>Se connecter</span></button>
+        <button type="button" onclick="closeLoginModal()" style="background: rgba(255,255,255,0.1); color: var(--muted); margin-left: 10px;"><span>Fermer</span></button>
+      </div>
+    </form>
+    <p id="modalMsg" class="muted" style="margin-top: 12px;"></p>
   </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', ()=>{ /* admin area will show after login */ });
 </script>
-</body></html>
+</body>
+</html>
