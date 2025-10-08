@@ -78,6 +78,41 @@ function renderList(){
   const noneText = typeof t === 'function' ? t('list.none') : 'Aucune réservation pour l\'instant.'; if(days.length===0) container.innerHTML=`<p class="muted">${noneText}</p>`;
 }
 
+// render cancelled days with restore button
+function renderCancelledDays(){
+  const container = document.getElementById('cancelledDays'); if(!container) return;
+  const cancelled = load(LS_KEYS.CAN);
+  container.innerHTML='';
+  
+  if(cancelled.length > 0){
+    const title = document.createElement('h4');
+    title.style.color = 'var(--gold1)';
+    title.style.marginBottom = '15px';
+    title.innerHTML = '<span data-i18n="admin.cancelled.title">Jours annulés (restaurables)</span>';
+    container.appendChild(title);
+    
+    cancelled.forEach(c => {
+      const block = document.createElement('div');
+      block.className = 'day-block';
+      block.style.background = 'rgba(220, 53, 69, 0.1)';
+      block.style.borderLeft = '3px solid rgba(220, 53, 69, 0.5)';
+      
+      const d = new Date(c.ts);
+      const dateStr = d.toLocaleString('fr-FR', {dateStyle: 'medium', timeStyle: 'short'});
+      const restoreText = typeof t === 'function' ? t('admin.restoreday') : 'Restaurer jour';
+      
+      block.innerHTML = `
+        <div class="day-title">
+          <strong style="color: #dc3545;">🚫 ${dayLabelFromKey(c.dayKey)}</strong>
+          <span class="muted" style="font-size: 12px;">Annulé le ${dateStr} • ${c.bookings.length} client(s)</span>
+          <div><button onclick="restoreDayByKey('${c.dayKey}')" style="background: rgba(40, 167, 69, 0.8);"><span>${restoreText}</span></button></div>
+        </div>
+      `;
+      container.appendChild(block);
+    });
+  }
+}
+
 // ADMIN helpers render days with actions, phone visible here
 function renderAdminDays(){
   const container=document.getElementById('adminDays'); if(!container) return;
@@ -161,7 +196,7 @@ function cancelDayByKey(dayKey){
   }
   save(LS_KEYS.BOOK,bks); 
   pushSystem('🚫 Jour annulé: ' + dayLabelFromKey(dayKey) + ' - Les clients ont été reprogrammés automatiquement'); 
-  renderAdminDays(); renderList(); renderAnnonces(); populateDaySelect();
+  renderCancelledDays(); renderAdminDays(); renderList(); renderAnnonces(); populateDaySelect();
 }
 
 // restore day (if capacity allows)
@@ -177,7 +212,7 @@ function restoreDayByKey(dayKey){
   snapshot.bookings.forEach(ob => { const copy = Object.assign({}, ob); copy.id = uid(); copy.inProgress = false; bks.push(copy); });
   cancelled.splice(idx,1); save(LS_KEYS.CAN, cancelled); save(LS_KEYS.BOOK, bks); 
   pushSystem('✅ Jour restauré: ' + dayLabelFromKey(dayKey) + ' - Les réservations ont été rétablies'); 
-  renderAdminDays(); renderList(); renderAnnonces(); populateDaySelect();
+  renderCancelledDays(); renderAdminDays(); renderList(); renderAnnonces(); populateDaySelect();
 }
 
 // create annonce (admin)
@@ -241,7 +276,7 @@ function activateAdminArea(){
   const area = document.getElementById('adminArea'); if(area) area.classList.remove('hidden');
   // if on admin.html, also open first tab and render data
   setupTabs();
-  renderAdminDays(); renderAdminAnns(); renderJournal(); populateDaySelect();
+  renderCancelledDays(); renderAdminDays(); renderAdminAnns(); renderJournal(); populateDaySelect();
   const welcomeMsg = typeof t === 'function' ? t('login.welcome') : 'Bienvenue, vous êtes connecté en tant que coiffeur';
   alert(welcomeMsg);
 }
@@ -270,4 +305,4 @@ function renderJournal(){ const el = document.getElementById('journalList'); if(
 function resetAll(){ if(!confirm('Réinitialiser toutes les données?')) return; localStorage.removeItem(LS_KEYS.BOOK); localStorage.removeItem(LS_KEYS.CAN); localStorage.removeItem(LS_KEYS.ANN); localStorage.removeItem(LS_KEYS.JOUR); ensureDefaults(); renderList(); renderAdminDays(); renderAnnonces(); renderAdminAnns(); renderJournal(); populateDaySelect(); alert('Réinitialisé'); }
 
 // initial renderers for pages
-window.addEventListener('DOMContentLoaded', ()=>{ renderList(); renderAnnonces(); setupTabs(); try{ renderAdminDays(); renderAdminAnns(); populateDaySelect(); }catch(e){} });
+window.addEventListener('DOMContentLoaded', ()=>{ renderList(); renderAnnonces(); setupTabs(); try{ renderCancelledDays(); renderAdminDays(); renderAdminAnns(); populateDaySelect(); }catch(e){} });
