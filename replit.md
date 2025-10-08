@@ -89,19 +89,8 @@ All data stored in localStorage with keys:
 - `bp_cancelled` - Cancelled day snapshots
 - `bp_annonces` - Announcements (user and system)
 - `bp_journal` - Activity log
-- `bp_income` - Income/revenue records
-- `bp_debt` - Debt records (legacy, kept for compatibility)
-- `bp_fulfilled` - Fulfilled days (تلبية - days completed)
 
 ## Recent Changes
-### October 2025 - Fulfillment System Update (2025-10-08)
-- ✅ Changed debt system to fulfillment system (تلبية)
-- 🔄 When all bookings for a day are fulfilled, the day is marked as complete
-- 🚫 Fulfilled days are excluded from new bookings
-- 📋 New bookings automatically added to the end of the list
-- ⬆️ When deleting a booking, subsequent bookings automatically move up
-- 🎯 Improved Arabic language support for fulfillment workflow
-
 ### October 2025 - Replit Environment Setup (2025-10-08)
 - ✅ Installed Python 3.11 and Node.js 20
 - ✅ Installed Three.js dependency via npm
