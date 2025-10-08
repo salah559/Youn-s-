@@ -229,12 +229,8 @@ function doModalLogin(){
   const c = creds();
   if(u === c.user && p === c.pass){ // success
     closeLoginModal();
-    // Redirect to admin page if not already there
-    if (!window.location.pathname.includes('admin.html')) {
-      window.location.href = 'admin.html';
-    } else {
-      activateAdminArea();
-    }
+    // Always redirect to admin page with login parameter
+    window.location.href = 'admin.html?loggedin=true';
   } else { 
     const msg = document.getElementById('modalMsg');
     if (msg) msg.innerText = typeof t === 'function' ? t('login.error') : 'Identifiants incorrects';
