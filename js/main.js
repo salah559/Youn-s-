@@ -264,8 +264,13 @@ function doModalLogin(){
   const c = creds();
   if(u === c.user && p === c.pass){ // success
     closeLoginModal();
-    // Always redirect to admin page with login parameter
-    window.location.href = 'admin.html?loggedin=true';
+    // Store login state and redirect
+    sessionStorage.setItem('admin_logged_in', 'true');
+    if(window.location.pathname.includes('admin.html')){
+      activateAdminArea();
+    } else {
+      window.location.href = 'admin.html';
+    }
   } else { 
     const msg = document.getElementById('modalMsg');
     if (msg) msg.innerText = typeof t === 'function' ? t('login.error') : 'Identifiants incorrects';
@@ -277,7 +282,7 @@ function activateAdminArea(){
   // if on admin.html, also open first tab and render data
   setupTabs();
   renderCancelledDays(); renderAdminDays(); renderAdminAnns(); renderJournal(); populateDaySelect();
-  const welcomeMsg = typeof t === 'function' ? t('login.welcome') : 'Bienvenue, vous êtes connecté en tant que coiffeur';
+  const welcomeMsg = typeof t === 'function' ? t('login.welcome') : 'مرحباً، تم تسجيل دخولك كحلاق';
   alert(welcomeMsg);
 }
 
