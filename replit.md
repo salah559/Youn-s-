@@ -42,7 +42,7 @@ This is a professional hair salon booking management system built with pure HTML
 
 ### Business Logic
 - Working days: Sunday (0), Tuesday (2), Thursday (4), Friday (5)
-- Capacity: Always 5 clients per day (all days)
+- Capacity: Friday = 3 clients, Other days (Sunday, Tuesday, Thursday) = 5 clients
 - Automatic scheduling to next available day
 - Day cancellation with automatic rescheduling
 - **Cascade auto-advance on delete**: When admin deletes a booking, entire queue advances - everyone moves one day earlier across all future days
@@ -97,7 +97,7 @@ All data stored in localStorage with keys:
 
 ## Recent Changes
 ### October 2025 - Business Logic Update (2025-10-08 Latest)
-- 🔧 Changed capacity to always be 5 clients per day (removed Friday=3 logic)
+- 🔧 Capacity: Friday = 3 clients, Other working days = 5 clients
 - 🔄 Cascade auto-advance: When admin deletes a client, entire queue advances across all days - each person moves one day earlier
 - 🚫 Completed bookings: When client pays or is marked as debt (haircut complete), the spot stays occupied and doesn't get filled by new bookings
 - 👁️ Hidden completed: Completed clients are hidden from public and admin views but still count toward daily capacity

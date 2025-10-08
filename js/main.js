@@ -36,7 +36,7 @@ function dayLabelFromKey(key){
 }
 function dayKeyFromDate(d){ const y=d.getFullYear(); const m=String(d.getMonth()+1).padStart(2,'0'); const day=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${day}`; }
 function getWorkingDays(next=180){ const res=[]; const t=new Date(); for(let i=0;i<next;i++){ const d=new Date(); d.setDate(t.getDate()+i); if([0,2,4,5].includes(d.getDay())) res.push(dayKeyFromDate(d)); } return res; }
-function capacity(key){ return 5; }
+function capacity(key){ const d=new Date(key+'T00:00:00'); return d.getDay()===5?3:5; }
 
 // Announcements: only show admin-created and system (cancel/restore) on public page
 function pushAnnonce(text,type='user'){ const a=load(LS_KEYS.ANN); a.unshift({id:uid(), text, ts:nowISO(), type}); save(LS_KEYS.ANN,a); log('Annonce: '+text); renderAnnonces(); }
