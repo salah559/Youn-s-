@@ -45,7 +45,7 @@ This is a professional hair salon booking management system built with pure HTML
 - Capacity: Always 5 clients per day (all days)
 - Automatic scheduling to next available day
 - Day cancellation with automatic rescheduling
-- **Auto-fill on delete**: When admin deletes a booking, first client from next day is automatically moved to fill the spot
+- **Cascade auto-advance on delete**: When admin deletes a booking, entire queue advances - everyone moves one day earlier across all future days
 - **Completed bookings**: When client pays/marked as debt (haircut done), booking is marked as completed:
   - Stays in system but hidden from public/admin view
   - Still counts toward day's capacity (keeps spot occupied)
@@ -98,10 +98,10 @@ All data stored in localStorage with keys:
 ## Recent Changes
 ### October 2025 - Business Logic Update (2025-10-08 Latest)
 - 🔧 Changed capacity to always be 5 clients per day (removed Friday=3 logic)
-- 🔄 Auto-fill feature: When admin deletes a client, automatically pulls first client from next working day
+- 🔄 Cascade auto-advance: When admin deletes a client, entire queue advances across all days - each person moves one day earlier
 - 🚫 Completed bookings: When client pays or is marked as debt (haircut complete), the spot stays occupied and doesn't get filled by new bookings
 - 👁️ Hidden completed: Completed clients are hidden from public and admin views but still count toward daily capacity
-- 📋 System announcements: Auto-fill actions are logged as system announcements
+- 📋 System announcements: Auto-advance actions are logged as system announcements
 
 ### October 2025 - Replit Environment Setup (2025-10-08)
 - ✅ Installed Python 3.11 and Node.js 20

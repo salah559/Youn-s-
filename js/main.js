@@ -144,7 +144,7 @@ function renderAdminDays(){
   });
 }
 
-// delete booking with auto-fill from next day
+// delete booking with cascade auto-fill (entire queue advances)
 function deleteBooking(id){ 
   let bks = load(LS_KEYS.BOOK); 
   const b = bks.find(x=>x.id===id); 
@@ -153,21 +153,25 @@ function deleteBooking(id){
   const deletedDay = b.dayKey;
   bks = bks.filter(x=>x.id!==id); 
   
-  // Find first person from a future day to move to deleted spot
+  // Cascade: advance entire queue across all days
   const days = getWorkingDays(180);
   const deletedDayIndex = days.indexOf(deletedDay);
   
-  for(let i = deletedDayIndex + 1; i < days.length; i++){
-    const nextDay = days[i];
-    const nextDayBookings = bks.filter(x => x.dayKey === nextDay);
+  // Starting from deleted day, pull first person from each next day
+  for(let i = deletedDayIndex; i < days.length - 1; i++){
+    const currentDay = days[i];
+    const nextDay = days[i + 1];
     
-    if(nextDayBookings.length > 0){
-      // Move first person from next day to deleted day
+    const currentDayBookings = bks.filter(x => x.dayKey === currentDay && !x.completed);
+    const nextDayBookings = bks.filter(x => x.dayKey === nextDay && !x.completed);
+    
+    // If current day is not full and next day has people, move first person
+    if(currentDayBookings.length < capacity(currentDay) && nextDayBookings.length > 0){
       const personToMove = nextDayBookings[0];
-      personToMove.dayKey = deletedDay;
-      personToMove.dayLabel = dayLabelFromKey(deletedDay);
-      pushSystem('Auto-remplissage: ' + personToMove.name + ' déplacé de ' + dayLabelFromKey(nextDay) + ' vers ' + dayLabelFromKey(deletedDay));
-      break;
+      const oldDay = personToMove.dayKey;
+      personToMove.dayKey = currentDay;
+      personToMove.dayLabel = dayLabelFromKey(currentDay);
+      pushSystem('Auto-avancement: ' + personToMove.name + ' de ' + dayLabelFromKey(oldDay) + ' → ' + dayLabelFromKey(currentDay));
     }
   }
   
