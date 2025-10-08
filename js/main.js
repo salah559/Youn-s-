@@ -20,7 +20,18 @@ function creds(){ return JSON.parse(localStorage.getItem(LS_KEYS.CRED)); }
 function saveCreds(x){ localStorage.setItem(LS_KEYS.CRED, JSON.stringify(x)); }
 
 // Days: 0=Dimanche,2=Mardi,4=Jeudi,5=Vendredi
-function dayLabelFromKey(key){ const d=new Date(key+'T00:00:00'); const names={0:'Dimanche',2:'Mardi',4:'Jeudi',5:'Vendredi'}; const nm = names[d.getDay()]||d.toLocaleDateString(); const date = ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear(); return nm + ' ' + date; }
+function dayLabelFromKey(key){ 
+  const d=new Date(key+'T00:00:00'); 
+  const dayMap = {
+    0: typeof t === 'function' ? t('day.sunday') : 'Dimanche',
+    2: typeof t === 'function' ? t('day.tuesday') : 'Mardi',
+    4: typeof t === 'function' ? t('day.thursday') : 'Jeudi',
+    5: typeof t === 'function' ? t('day.friday') : 'Vendredi'
+  };
+  const nm = dayMap[d.getDay()] || d.toLocaleDateString(); 
+  const date = ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear(); 
+  return nm + ' ' + date; 
+}
 function dayKeyFromDate(d){ const y=d.getFullYear(); const m=String(d.getMonth()+1).padStart(2,'0'); const day=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${day}`; }
 function getWorkingDays(next=180){ const res=[]; const t=new Date(); for(let i=0;i<next;i++){ const d=new Date(); d.setDate(t.getDate()+i); if([0,2,4,5].includes(d.getDay())) res.push(dayKeyFromDate(d)); } return res; }
 function capacity(key){ const d=new Date(key+'T00:00:00'); return d.getDay()===5?3:5; }
@@ -35,7 +46,16 @@ function addBooking(name,surname,phone){
   const bks = load(LS_KEYS.BOOK);
   const counts = {}; bks.forEach(b=> counts[b.dayKey]=(counts[b.dayKey]||0)+1);
   const days = getWorkingDays(180);
-  for(const k of days){ if((counts[k]||0) < capacity(k)){ const nb={id:uid(), name, surname, phone: phone||'', dayKey:k, dayLabel:dayLabelFromKey(k), inProgress:false, createdAt:nowISO()}; bks.push(nb); save(LS_KEYS.BOOK,bks); document.getElementById('resInfo') && (document.getElementById('resInfo').innerText='Réservé: '+nb.dayLabel); return; } }
+  for(const k of days){ 
+    if((counts[k]||0) < capacity(k)){ 
+      const nb={id:uid(), name, surname, phone: phone||'', dayKey:k, dayLabel:dayLabelFromKey(k), inProgress:false, createdAt:nowISO()}; 
+      bks.push(nb); 
+      save(LS_KEYS.BOOK,bks); 
+      const successMsg = (typeof t === 'function' ? t('reservation.success') : 'Réservé: ') + nb.dayLabel;
+      document.getElementById('resInfo') && (document.getElementById('resInfo').innerText=successMsg); 
+      return; 
+    } 
+  }
   alert('Aucun créneau disponible');
 }
 
@@ -47,15 +67,15 @@ function renderList(){
   container.innerHTML='';
   days.forEach(k=>{
     const dayBlock = document.createElement('div'); dayBlock.className='day-block';
-    const title = document.createElement('div'); title.className='day-title'; title.innerHTML = `<strong>${dayLabelFromKey(k)}</strong><span class="muted">Capacité: ${capacity(k)}</span>`;
+    const title = document.createElement('div'); title.className='day-title'; const capacityText = typeof t === 'function' ? t('list.capacity') : 'Capacité: '; title.innerHTML = `<strong>${dayLabelFromKey(k)}</strong><span class="muted">${capacityText}${capacity(k)}</span>`;
     dayBlock.appendChild(title);
     bks.filter(x=>x.dayKey===k).forEach(c=>{
-      const row=document.createElement('div'); row.className='client-row' + (c.inProgress? ' highlight':''); row.innerHTML = `<div class="client-name">${c.name} ${c.surname}</div><div class="client-actions">${c.inProgress? '<span class="badge">En cours</span>':''}</div>`;
+      const row=document.createElement('div'); row.className='client-row' + (c.inProgress? ' highlight':''); const badgeText = typeof t === 'function' ? t('list.inprogress') : 'En cours'; row.innerHTML = `<div class="client-name">${c.name} ${c.surname}</div><div class="client-actions">${c.inProgress? `<span class="badge">${badgeText}</span>`:''}</div>`;
       dayBlock.appendChild(row);
     });
     container.appendChild(dayBlock);
   });
-  if(days.length===0) container.innerHTML='<p class="muted">Aucune réservation pour l’instant.</p>';
+  const noneText = typeof t === 'function' ? t('list.none') : 'Aucune réservation pour l\'instant.'; if(days.length===0) container.innerHTML=`<p class="muted">${noneText}</p>`;
 }
 
 // ADMIN helpers render days with actions, phone visible here
@@ -67,17 +87,17 @@ function renderAdminDays(){
   days.forEach(k=>{
     const items = bks.filter(x=>x.dayKey===k);
     const block=document.createElement('div'); block.className='day-block';
-    const title=document.createElement('div'); title.className='day-title'; title.innerHTML=`<strong>${dayLabelFromKey(k)}</strong><div><button onclick="cancelDayByKey('${k}')"><span>Annuler jour</span></button></div>`;
+    const title=document.createElement('div'); title.className='day-title'; const cancelText = typeof t === 'function' ? t('admin.cancelday') : 'Annuler jour'; title.innerHTML=`<strong>${dayLabelFromKey(k)}</strong><div><button onclick="cancelDayByKey('${k}')"><span>${cancelText}</span></button></div>`;
     block.appendChild(title);
-    if(items.length===0){ const p=document.createElement('p'); p.className='muted'; p.innerText='Aucun client'; block.appendChild(p); }
+    if(items.length===0){ const p=document.createElement('p'); p.className='muted'; p.innerText= typeof t === 'function' ? t('admin.noclient') : 'Aucun client'; block.appendChild(p); }
     items.forEach((c,idx)=>{
       const row=document.createElement('div'); row.className='client-row' + (c.inProgress? ' highlight':'');
       const nameDiv=document.createElement('div'); nameDiv.className='client-name'; nameDiv.innerText = (idx+1) + '. ' + c.name + ' ' + c.surname + (c.phone? ' • ' + c.phone : ' • ---');
       const actionsDiv=document.createElement('div'); actionsDiv.className='client-actions';
-      const btnProm=document.createElement('button'); btnProm.innerHTML='<span>Promouvoir</span>'; btnProm.onclick=()=> promoteBooking(c.id);
-      const btnIn=document.createElement('button'); btnIn.innerHTML='<span>En cours</span>'; btnIn.onclick=()=> setInProgress(c.id);
-      const btnDel=document.createElement('button'); btnDel.innerHTML='<span>Supprimer</span>'; btnDel.onclick=()=> { if(confirm('Supprimer?')) deleteBooking(c.id); };
-      const btnEdit=document.createElement('button'); btnEdit.innerHTML='<span>Éditer</span>'; btnEdit.onclick=()=> editBooking(c.id);
+      const btnProm=document.createElement('button'); btnProm.innerHTML='<span>'+(typeof t === 'function' ? t('button.promote') : 'Promouvoir')+'</span>'; btnProm.onclick=()=> promoteBooking(c.id);
+      const btnIn=document.createElement('button'); btnIn.innerHTML='<span>'+(typeof t === 'function' ? t('button.inprogress') : 'En cours')+'</span>'; btnIn.onclick=()=> setInProgress(c.id);
+      const btnDel=document.createElement('button'); btnDel.innerHTML='<span>'+(typeof t === 'function' ? t('button.delete') : 'Supprimer')+'</span>'; btnDel.onclick=()=> { if(confirm(typeof t === 'function' ? t('button.delete') + '?' : 'Supprimer?')) deleteBooking(c.id); };
+      const btnEdit=document.createElement('button'); btnEdit.innerHTML='<span>'+(typeof t === 'function' ? t('button.edit') : 'Éditer')+'</span>'; btnEdit.onclick=()=> editBooking(c.id);
       actionsDiv.appendChild(btnProm); actionsDiv.appendChild(btnIn); actionsDiv.appendChild(btnEdit); actionsDiv.appendChild(btnDel);
       row.appendChild(nameDiv); row.appendChild(actionsDiv); block.appendChild(row);
     });
@@ -167,7 +187,7 @@ function renderAnnonces(){
   const list = document.getElementById('annList'); if(!list) return;
   const anns = load(LS_KEYS.ANN).filter(a=> a.type==='user' || a.type==='system');
   list.innerHTML='';
-  if(anns.length===0){ list.innerHTML='<p class="muted">Aucune annonce</p>'; return; }
+  if(anns.length===0){ list.innerHTML='<p class="muted">'+(typeof t === 'function' ? t('announcements.none') : 'Aucune annonce')+'</p>'; return; }
   anns.forEach(a=>{ const node=document.createElement('div'); node.className='card'; const d=new Date(a.ts); node.innerHTML = `<div style="font-size:13px;color:var(--muted)">${(a.type==='system'?'[SYSTEM] ':'')}${d.toLocaleString()}</div><p>${a.text}</p>`; list.appendChild(node); });
 }
 
@@ -196,7 +216,17 @@ function doModalLogin(){
   const u = document.getElementById('modalUser').value.trim(); const p = document.getElementById('modalPass').value.trim();
   const c = creds();
   if(u === c.user && p === c.pass){ // success
-    closeLoginModal(); activateAdminArea(); } else { document.getElementById('modalMsg').innerText = 'Identifiants incorrects'; }
+    closeLoginModal();
+    // Redirect to admin page if not already there
+    if (!window.location.pathname.includes('admin.html')) {
+      window.location.href = 'admin.html';
+    } else {
+      activateAdminArea();
+    }
+  } else { 
+    const msg = document.getElementById('modalMsg');
+    if (msg) msg.innerText = typeof t === 'function' ? t('login.error') : 'Identifiants incorrects';
+  }
 }
 function activateAdminArea(){
   // show admin area on admin page if present
@@ -204,7 +234,8 @@ function activateAdminArea(){
   // if on admin.html, also open first tab and render data
   setupTabs();
   renderAdminDays(); renderAdminAnns(); renderJournal(); populateDaySelect();
-  alert('Bienvenue, vous êtes connecté en tant que coiffeur');
+  const welcomeMsg = typeof t === 'function' ? t('login.welcome') : 'Bienvenue, vous êtes connecté en tant que coiffeur';
+  alert(welcomeMsg);
 }
 
 // setup tabs handlers

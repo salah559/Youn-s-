@@ -113,6 +113,22 @@ body::before {
   box-shadow: 0 12px 40px rgba(202, 164, 60, 0.6);
 }
 
+.lang-btn {
+  background: rgba(202, 164, 60, 0.2);
+  border: 1px solid rgba(202, 164, 60, 0.4);
+  color: var(--gold-bright);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.lang-btn:hover {
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold2));
+  color: #0b0b0b;
+  transform: translateY(-2px);
+}
+
 .container {
   position: relative;
   z-index: 10;
@@ -434,6 +450,36 @@ button span {
 
 .hidden {
   display: none !important;
+}
+
+/* RTL Support for Arabic */
+[dir="rtl"] .site-header {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .nav {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .day-title {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .client-row {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .client-actions {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] button {
+  margin-right: 10px;
+  margin-left: 0;
+}
+
+[dir="rtl"] .actions {
+  text-align: left;
 }
 
 @media(max-width: 760px) {
