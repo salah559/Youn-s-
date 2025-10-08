@@ -221,7 +221,7 @@ function markAsDebt(id){
     phone: b.phone || '',
     dayKey: b.dayKey,
     dayLabel: b.dayLabel,
-    amount: 100,
+    amount: 200,
     ts: nowISO()
   });
   save(LS_KEYS.DEBT, debts);
