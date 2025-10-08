@@ -1,5 +1,5 @@
 // js/main.js - final pro build: gold theme, modal login, admin tabs, announcements filtered
-const LS_KEYS = {CRED:'bp_creds', BOOK:'bp_bookings', CAN:'bp_cancelled', ANN:'bp_annonces', JOUR:'bp_journal', INCOME:'bp_income', DEBT:'bp_debt'};
+const LS_KEYS = {CRED:'bp_creds', BOOK:'bp_bookings', CAN:'bp_cancelled', ANN:'bp_annonces', JOUR:'bp_journal', INCOME:'bp_income', DEBT:'bp_debt', FULFILLED:'bp_fulfilled'};
 
 function nowISO(){ return new Date().toISOString(); }
 function uid(){ return 'id_' + Math.random().toString(36).slice(2,9); }
@@ -12,6 +12,7 @@ function ensureDefaults(){
   if(!localStorage.getItem(LS_KEYS.JOUR)) localStorage.setItem(LS_KEYS.JOUR, JSON.stringify([]));
   if(!localStorage.getItem(LS_KEYS.INCOME)) localStorage.setItem(LS_KEYS.INCOME, JSON.stringify([]));
   if(!localStorage.getItem(LS_KEYS.DEBT)) localStorage.setItem(LS_KEYS.DEBT, JSON.stringify([]));
+  if(!localStorage.getItem(LS_KEYS.FULFILLED)) localStorage.setItem(LS_KEYS.FULFILLED, JSON.stringify([]));
 }
 ensureDefaults();
 
@@ -46,9 +47,11 @@ function log(msg){ const j=load(LS_KEYS.JOUR); j.unshift({id:uid(), msg, ts:nowI
 function addBooking(name,surname,phone){
   if(!name||!surname){ alert('Nom et Prénom requis'); return; }
   const bks = load(LS_KEYS.BOOK);
+  const fulfilledDays = load(LS_KEYS.FULFILLED);
   const counts = {}; bks.forEach(b=> counts[b.dayKey]=(counts[b.dayKey]||0)+1);
   const days = getWorkingDays(180);
   for(const k of days){ 
+    if(fulfilledDays.includes(k)) continue;
     if((counts[k]||0) < capacity(k)){ 
       const nb={id:uid(), name, surname, phone: phone||'', dayKey:k, dayLabel:dayLabelFromKey(k), inProgress:false, createdAt:nowISO()}; 
       bks.push(nb); 
@@ -134,10 +137,10 @@ function renderAdminDays(){
       const btnProm=document.createElement('button'); btnProm.innerHTML='<span>'+(typeof t === 'function' ? t('button.promote') : 'Promouvoir')+'</span>'; btnProm.onclick=()=> promoteBooking(c.id);
       const btnIn=document.createElement('button'); btnIn.innerHTML='<span>'+(typeof t === 'function' ? t('button.inprogress') : 'En cours')+'</span>'; btnIn.onclick=()=> setInProgress(c.id);
       const btnPaid=document.createElement('button'); btnPaid.innerHTML='<span>'+(typeof t === 'function' ? t('button.paid') : '💰 Payé')+'</span>'; btnPaid.style.background='rgba(40, 167, 69, 0.8)'; btnPaid.onclick=()=> { const amount = prompt('Montant (DA)', '200'); if(amount) markAsPaid(c.id, parseInt(amount)); };
-      const btnDebt=document.createElement('button'); btnDebt.innerHTML='<span>'+(typeof t === 'function' ? t('button.debt') : '📝 Dين')+'</span>'; btnDebt.style.background='rgba(220, 53, 69, 0.8)'; btnDebt.onclick=()=> { if(confirm('Marquer comme dette?')) markAsDebt(c.id); };
+      const btnFulfill=document.createElement('button'); btnFulfill.innerHTML='<span>'+(typeof t === 'function' ? t('button.fulfill') : '✅ تلبية')+'</span>'; btnFulfill.style.background='rgba(40, 167, 69, 0.8)'; btnFulfill.onclick=()=> { if(confirm('تلبية الطلب؟')) markAsFulfilled(c.id); };
       const btnEdit=document.createElement('button'); btnEdit.innerHTML='<span>'+(typeof t === 'function' ? t('button.edit') : 'Éditer')+'</span>'; btnEdit.onclick=()=> editBooking(c.id);
       const btnDel=document.createElement('button'); btnDel.innerHTML='<span>'+(typeof t === 'function' ? t('button.delete') : 'Supprimer')+'</span>'; btnDel.onclick=()=> { if(confirm(typeof t === 'function' ? t('button.delete') + '?' : 'Supprimer?')) deleteBooking(c.id); };
-      actionsDiv.appendChild(btnProm); actionsDiv.appendChild(btnIn); actionsDiv.appendChild(btnPaid); actionsDiv.appendChild(btnDebt); actionsDiv.appendChild(btnEdit); actionsDiv.appendChild(btnDel);
+      actionsDiv.appendChild(btnProm); actionsDiv.appendChild(btnIn); actionsDiv.appendChild(btnPaid); actionsDiv.appendChild(btnFulfill); actionsDiv.appendChild(btnEdit); actionsDiv.appendChild(btnDel);
       row.appendChild(nameDiv); row.appendChild(actionsDiv); block.appendChild(row);
     });
     container.appendChild(block);
@@ -206,7 +209,45 @@ function markAsPaid(id, price = 100){
   renderAccounting();
 }
 
-// mark as debt
+// mark as fulfilled
+function markAsFulfilled(id){
+  const bks = load(LS_KEYS.BOOK);
+  const b = bks.find(x=>x.id===id);
+  if(!b) return;
+  
+  const dayKey = b.dayKey;
+  
+  // delete booking
+  const newBks = bks.filter(x=>x.id!==id);
+  save(LS_KEYS.BOOK, newBks);
+  
+  // check if day is now empty
+  const remainingInDay = newBks.filter(x=>x.dayKey===dayKey);
+  if(remainingInDay.length === 0){
+    // mark day as fulfilled
+    const fulfilledDays = load(LS_KEYS.FULFILLED);
+    if(!fulfilledDays.includes(dayKey)){
+      fulfilledDays.push(dayKey);
+      save(LS_KEYS.FULFILLED, fulfilledDays);
+      
+      // add new day after the last working day
+      const allDays = getWorkingDays(365);
+      const bookingDays = [...new Set(newBks.map(x=>x.dayKey))];
+      const lastBookingDay = bookingDays.length > 0 ? bookingDays[bookingDays.length - 1] : dayKeyFromDate(new Date());
+      const lastIndex = allDays.indexOf(lastBookingDay);
+      
+      log('Jour ' + dayLabelFromKey(dayKey) + ' terminé (تم تلبية جميع الطلبات) - يوم جديد متاح بعد ' + dayLabelFromKey(lastBookingDay));
+      pushSystem('✅ جميع طلبات ' + dayLabelFromKey(dayKey) + ' تم تلبيتها - اليوم مكتمل');
+    }
+  }
+  
+  log('تلبية طلب: ' + b.name + ' ' + b.surname);
+  renderAdminDays();
+  renderList();
+  renderAnnonces();
+}
+
+// mark as debt (kept for compatibility)
 function markAsDebt(id){
   const bks = load(LS_KEYS.BOOK);
   const b = bks.find(x=>x.id===id);
