@@ -58,23 +58,27 @@
 
     <div id="tab-ann" class="tab panel hidden">
       <h3 style="color: var(--gold1); margin-bottom: 20px;" data-i18n="admin.announcements.title">Annonces (créées par le coiffeur)</h3>
-      <textarea id="annText" data-i18n="admin.announcements.placeholder" placeholder="Titre / message..."></textarea>
-      <div class="actions">
-        <button onclick="createAnnonce()"><span data-i18n="admin.announcements.publish">Publier annonce</span></button>
-      </div>
+      <form onsubmit="event.preventDefault(); createAnnonce();">
+        <textarea id="annText" data-i18n="admin.announcements.placeholder" placeholder="Titre / message..."></textarea>
+        <div class="actions">
+          <button type="submit"><span data-i18n="admin.announcements.publish">Publier annonce</span></button>
+        </div>
+      </form>
       <div id="adminAnns" style="margin-top: 20px;"></div>
     </div>
 
     <div id="tab-params" class="tab panel hidden">
       <h3 style="color: var(--gold1); margin-bottom: 20px;" data-i18n="admin.settings.title">Paramètres</h3>
-      <label data-i18n="admin.settings.user">Nouvel utilisateur</label>
-      <input id="newUser">
-      <label data-i18n="admin.settings.password">Nouveau mot de passe</label>
-      <input id="newPass" type="password">
-      <div class="actions">
-        <button onclick="changeCredentials()"><span data-i18n="admin.settings.update">Mettre à jour</span></button>
-        <button onclick="resetAll()" style="background: rgba(220, 53, 69, 0.8); margin-left: 10px;"><span data-i18n="admin.settings.reset">Réinitialiser tout</span></button>
-      </div>
+      <form onsubmit="event.preventDefault(); changeCredentials();">
+        <label data-i18n="admin.settings.user">Nouvel utilisateur</label>
+        <input id="newUser" autocomplete="username">
+        <label data-i18n="admin.settings.password">Nouveau mot de passe</label>
+        <input id="newPass" type="password" autocomplete="new-password">
+        <div class="actions">
+          <button type="submit"><span data-i18n="admin.settings.update">Mettre à jour</span></button>
+          <button type="button" onclick="resetAll()" style="background: rgba(220, 53, 69, 0.8); margin-left: 10px;"><span data-i18n="admin.settings.reset">Réinitialiser tout</span></button>
+        </div>
+      </form>
     </div>
 
     <div id="tab-journal" class="tab panel hidden">

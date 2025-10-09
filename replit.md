@@ -98,7 +98,24 @@ All data stored in localStorage with keys:
 - `bp_journal` - Activity log
 
 ## Recent Changes
-### October 2025 - Contact Page & Mobile Improvements (2025-10-09 Latest)
+### October 2025 - Admin Page Mobile Optimization (2025-10-09 Latest)
+- 📱 Major improvements to admin page on mobile devices
+  - Scrollable tabs with horizontal scroll for all 6 admin sections
+  - Visual scroll indicator (→) to show more tabs available
+  - Optimized button layout: 3 columns grid for client actions
+  - Full-width buttons for settings and announcements on mobile
+  - Better spacing and touch targets for all interactive elements
+- 🔧 Fixed form validation warnings
+  - Wrapped password fields in proper forms
+  - Added autocomplete attributes for better UX
+- 🎨 Enhanced mobile layout
+  - Compact cards for accounting and debts on small screens
+  - Improved textarea size and responsiveness
+  - Better day-title button layout (full-width on mobile)
+  - Optimized client-row display with vertical stacking
+- ✅ All admin features now fully usable on phones and tablets
+
+### October 2025 - Contact Page & Mobile Improvements (2025-10-09)
 - ✨ Added new Contact page with salon information
   - Phone number, email, address, and hours of operation
   - Social media links (Facebook, Instagram, WhatsApp)

@@ -675,21 +675,42 @@ button span {
   }
   
   .client-actions button {
-    padding: 8px 14px;
-    font-size: 13px;
-    min-width: 80px;
+    padding: 10px 12px;
+    font-size: 12px;
+    min-width: 70px;
+    flex: 1;
+  }
+  
+  .actions button {
+    padding: 12px 18px;
+    font-size: 14px;
   }
   
   .tabs {
     gap: 8px;
-    justify-content: center;
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold1) transparent;
+    padding-bottom: 8px;
+  }
+  
+  .tabs::-webkit-scrollbar {
+    height: 6px;
+  }
+  
+  .tabs::-webkit-scrollbar-thumb {
+    background: var(--gold1);
+    border-radius: 3px;
   }
   
   .tab-btn {
-    padding: 10px 14px;
+    padding: 12px 16px;
     font-size: 13px;
-    flex: 1;
-    min-width: 100px;
+    flex-shrink: 0;
+    min-width: auto;
+    white-space: nowrap;
   }
   
   .lang-btn {
@@ -756,6 +777,49 @@ button span {
   }
 }
 
+/* Admin improvements for mobile */
+@media(max-width: 760px) {
+  .tabs {
+    margin-bottom: 20px;
+  }
+  
+  .panel h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+  
+  #adminDays .day-block,
+  #cancelledDays .day-block {
+    margin-bottom: 18px;
+  }
+  
+  .day-title {
+    gap: 10px;
+  }
+  
+  .client-name {
+    font-size: 14px;
+    word-break: break-word;
+  }
+  
+  /* Better spacing for admin forms */
+  #tab-params input,
+  #tab-ann textarea {
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+  
+  #tab-params .actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  #tab-params .actions button {
+    width: 100%;
+    margin-left: 0 !important;
+  }
+}
+
 @media(max-width: 480px) {
   .site-header {
     padding: 12px;
@@ -802,6 +866,45 @@ button span {
     min-width: 70px;
   }
   
+  /* Make client rows more mobile-friendly in admin */
+  #adminDays .client-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+  
+  #adminDays .client-name {
+    width: 100%;
+  }
+  
+  #adminDays .client-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  
+  #adminDays .client-actions button {
+    min-width: auto;
+    padding: 10px 8px;
+    font-size: 11px;
+  }
+  
+  /* Optimize day-title buttons for mobile */
+  .day-title {
+    flex-wrap: wrap;
+  }
+  
+  .day-title > div {
+    width: 100%;
+    margin-top: 10px;
+  }
+  
+  .day-title button {
+    width: 100%;
+  }
+  
   .nav a {
     font-size: 12px;
     padding: 10px 6px;
@@ -814,12 +917,36 @@ button span {
   
   .tabs {
     gap: 6px;
+    flex-wrap: nowrap;
   }
   
   .tab-btn {
-    font-size: 12px;
-    padding: 9px 10px;
+    font-size: 11px;
+    padding: 10px 12px;
     min-width: auto;
+  }
+  
+  .client-actions {
+    gap: 6px;
+  }
+  
+  .client-actions button {
+    padding: 9px 10px;
+    font-size: 11px;
+    min-width: 60px;
+  }
+  
+  .day-title button {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  
+  h3 {
+    font-size: 18px;
+  }
+  
+  .panel {
+    padding: 15px 0;
   }
   
   .card {
@@ -854,4 +981,61 @@ button span {
   .site-header {
     padding: 10px;
   }
+  
+  /* Enhanced admin mobile layout */
+  .tabs {
+    padding: 5px 0;
+  }
+  
+  .panel h3 {
+    font-size: 17px !important;
+  }
+  
+  #adminAnns,
+  #journalList,
+  #accountingList,
+  #debtsList {
+    font-size: 14px;
+  }
+  
+  .badge {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+  
+  /* Compact cards for debts and accounting */
+  .card[style*="background"] {
+    padding: 15px !important;
+  }
+  
+  /* Better button layout in actions */
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .actions button {
+    width: 100%;
+    margin: 0 !important;
+  }
+  
+  /* Improve textarea for mobile */
+  textarea {
+    min-height: 100px;
+    font-size: 15px;
+  }
+  
+  /* Better scrollable tabs indicator */
+  .tabs::after {
+    content: '→';
+    position: sticky;
+    right: 0;
+    background: linear-gradient(to left, var(--bg1), transparent);
+    padding: 0 10px;
+    color: var(--gold1);
+    font-size: 18px;
+    pointer-events: none;
+  }
 }
+
