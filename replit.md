@@ -16,6 +16,7 @@ This is a professional hair salon booking management system built with pure HTML
   - `annoncent.html` - Public announcements page
   - `reservation.html` - Booking form for clients
   - `list.html` - Public list of all bookings grouped by day
+  - `contact.html` - Contact page with salon info and social media links
   - `admin.html` - Admin panel (requires login)
 - **Assets**:
   - `css/style.css` - Enhanced professional gold on black theme with modern effects
@@ -29,7 +30,8 @@ This is a professional hair salon booking management system built with pure HTML
 - View all bookings organized by day
 - See which client is currently being served ("En cours")
 - View salon announcements and system notifications
-- Interactive 3D background that follows mouse movement
+- Contact page with phone, email, address, and social media links
+- Fully bilingual interface (French/Arabic) with RTL support
 
 ### Admin Features (Login: younes/younes)
 - Manage bookings: promote in queue, edit, delete, mark "in progress"
@@ -96,7 +98,22 @@ All data stored in localStorage with keys:
 - `bp_journal` - Activity log
 
 ## Recent Changes
-### October 2025 - GitHub Import Setup (2025-10-09 Latest)
+### October 2025 - Contact Page & Mobile Improvements (2025-10-09 Latest)
+- ✨ Added new Contact page with salon information
+  - Phone number, email, address, and hours of operation
+  - Social media links (Facebook, Instagram, WhatsApp)
+  - Beautiful card-based design with hover effects
+  - Fully responsive for mobile devices
+- 📱 Significantly improved mobile experience
+  - Optimized navigation for small screens (4 links fit perfectly)
+  - Enhanced responsive design for tablets and phones
+  - Improved touch targets and button sizes
+  - Better spacing and layout on mobile devices
+- 🌐 Added bilingual support (French/Arabic) for Contact page
+- 🎨 Enhanced CSS with professional social media buttons
+- ✅ All navigation updated across all pages
+
+### October 2025 - GitHub Import Setup (2025-10-09)
 - ✅ Successfully imported GitHub repository to Replit
 - ✅ Installed Python 3.11 for server
 - ✅ Installed Node.js 20 and Three.js dependency via npm

@@ -5,6 +5,7 @@ const translations = {
         'nav.announcements': 'Annonces',
         'nav.reservation': 'Réservation',
         'nav.list': 'Liste',
+        'nav.contact': 'Contact',
 
         // Announcements page
         'announcements.title': 'Salon — Annonces',
@@ -72,13 +73,28 @@ const translations = {
         'day.sunday': 'Dimanche',
         'day.tuesday': 'Mardi',
         'day.thursday': 'Jeudi',
-        'day.friday': 'Vendredi'
+        'day.friday': 'Vendredi',
+
+        // Contact page
+        'contact.title': 'Contactez-nous',
+        'contact.subtitle': 'Pour prendre rendez-vous ou pour toute question, contactez le salon.',
+        'contact.info': 'Informations de contact',
+        'contact.phone': 'Téléphone',
+        'contact.email': 'Email',
+        'contact.address': 'Adresse',
+        'contact.hours': 'Horaires',
+        'contact.hours.detail': 'Dimanche, Mardi, Jeudi, Vendredi',
+        'contact.social': 'Réseaux sociaux',
+        'contact.facebook': 'Facebook',
+        'contact.instagram': 'Instagram',
+        'contact.whatsapp': 'WhatsApp'
     },
     ar: {
         // Navigation
         'nav.announcements': 'الإعلانات',
         'nav.reservation': 'الحجز',
         'nav.list': 'القائمة',
+        'nav.contact': 'اتصل بنا',
 
         // Announcements page
         'announcements.title': 'صالون — الإعلانات',
@@ -159,7 +175,21 @@ const translations = {
         'day.sunday': 'الأحد',
         'day.tuesday': 'الثلاثاء',
         'day.thursday': 'الخميس',
-        'day.friday': 'الجمعة'
+        'day.friday': 'الجمعة',
+
+        // Contact page
+        'contact.title': 'اتصل بنا',
+        'contact.subtitle': 'لحجز موعد أو لأي استفسار، اتصل بالصالون.',
+        'contact.info': 'معلومات الاتصال',
+        'contact.phone': 'الهاتف',
+        'contact.email': 'البريد الإلكتروني',
+        'contact.address': 'العنوان',
+        'contact.hours': 'أوقات العمل',
+        'contact.hours.detail': 'الأحد، الثلاثاء، الخميس، الجمعة',
+        'contact.social': 'وسائل التواصل الاجتماعي',
+        'contact.facebook': 'فيسبوك',
+        'contact.instagram': 'إنستغرام',
+        'contact.whatsapp': 'واتساب'
     }
 };
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Salon - Réservation</title>
+<title>Salon - Contact</title>
 <link rel="stylesheet" href="css/style.css">
 <script src="js/translations.js" defer></script>
 <script src="js/main.js" defer></script>
@@ -24,23 +24,59 @@
 
 <main class="container">
   <section class="card hero">
-    <h1 data-i18n="reservation.title">Réservation</h1>
-    <p class="lead" data-i18n="reservation.subtitle">Réservez facilement — téléphone optionnel.</p>
+    <h1 data-i18n="contact.title">Contactez-nous</h1>
+    <p class="lead" data-i18n="contact.subtitle">Pour prendre rendez-vous ou pour toute question, contactez le salon.</p>
   </section>
 
   <section class="card">
-    <form id="resForm" class="form">
-      <label data-i18n="reservation.name">Nom *</label>
-      <input id="name" required>
-      <label data-i18n="reservation.surname">Prénom *</label>
-      <input id="surname" required>
-      <label data-i18n="reservation.phone">Téléphone (optionnel)</label>
-      <input id="phone" data-i18n="reservation.phone.placeholder" placeholder="Laisser vide si vous préférez">
-      <div class="actions">
-        <button type="submit"><span data-i18n="reservation.button">Réserver</span></button>
+    <h2 style="color: var(--gold1); margin-bottom: 30px;" data-i18n="contact.info">Informations de contact</h2>
+    
+    <div class="contact-grid">
+      <div class="contact-item">
+        <div class="contact-icon">📞</div>
+        <h3 data-i18n="contact.phone">Téléphone</h3>
+        <a href="tel:+213123456789" class="contact-link">+213 123 456 789</a>
       </div>
-      <p id="resInfo" class="muted" style="margin-top: 16px;"></p>
-    </form>
+
+      <div class="contact-item">
+        <div class="contact-icon">📧</div>
+        <h3 data-i18n="contact.email">Email</h3>
+        <a href="mailto:salon@example.com" class="contact-link">salon@example.com</a>
+      </div>
+
+      <div class="contact-item">
+        <div class="contact-icon">📍</div>
+        <h3 data-i18n="contact.address">Adresse</h3>
+        <p class="contact-text">123 Rue Principale, Ville</p>
+      </div>
+
+      <div class="contact-item">
+        <div class="contact-icon">⏰</div>
+        <h3 data-i18n="contact.hours">Horaires</h3>
+        <p class="contact-text" data-i18n="contact.hours.detail">Dimanche, Mardi, Jeudi, Vendredi</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 style="color: var(--gold1); margin-bottom: 20px;" data-i18n="contact.social">Réseaux sociaux</h2>
+    
+    <div class="social-links">
+      <a href="#" class="social-btn facebook">
+        <span class="social-icon">f</span>
+        <span data-i18n="contact.facebook">Facebook</span>
+      </a>
+      
+      <a href="#" class="social-btn instagram">
+        <span class="social-icon">📷</span>
+        <span data-i18n="contact.instagram">Instagram</span>
+      </a>
+      
+      <a href="https://wa.me/213123456789" class="social-btn whatsapp">
+        <span class="social-icon">💬</span>
+        <span data-i18n="contact.whatsapp">WhatsApp</span>
+      </a>
+    </div>
   </section>
 </main>
 
@@ -61,13 +97,5 @@
   </div>
 </div>
 
-<script>
-document.getElementById('resForm').addEventListener('submit', function(e){
-  e.preventDefault();
-  addBooking(document.getElementById('name').value.trim(), document.getElementById('surname').value.trim(), document.getElementById('phone').value.trim());
-  this.reset();
-  renderList();
-});
-</script>
 </body>
 </html>
