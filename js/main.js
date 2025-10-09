@@ -596,8 +596,36 @@ function changeCredentials(){ const nu=document.getElementById('newUser').value.
 // render journal (admin)
 function renderJournal(){ const el = document.getElementById('journalList'); if(!el) return; const j = load(LS_KEYS.JOUR); el.innerHTML = ''; j.forEach(it=>{ const d=new Date(it.ts); const node=document.createElement('div'); node.className='card'; node.innerHTML=`<div style="font-size:13px;color:var(--muted)">${d.toLocaleString()}</div><p>${it.msg}</p>`; el.appendChild(node); }); if(j.length===0) el.innerHTML='<p class="muted">Journal vide</p>'; }
 
-// reset all storage (admin)
-function resetAll(){ if(!confirm('Réinitialiser toutes les données?')) return; localStorage.removeItem(LS_KEYS.BOOK); localStorage.removeItem(LS_KEYS.CAN); localStorage.removeItem(LS_KEYS.ANN); localStorage.removeItem(LS_KEYS.JOUR); ensureDefaults(); renderList(); renderAdminDays(); renderAnnonces(); renderAdminAnns(); renderJournal(); populateDaySelect(); alert('Réinitialisé'); }
+// reset all storage (admin) - complete wipe
+function resetAll(){ 
+  if(!confirm('⚠️ حذف جميع البيانات نهائياً؟\n\nسيتم مسح:\n• جميع الحجوزات\n• الديون والمدفوعات\n• الإعلانات والسجل\n• الأيام الملغاة\n\nهل أنت متأكد؟')) return;
+  
+  // Clear all data
+  localStorage.removeItem(LS_KEYS.BOOK);
+  localStorage.removeItem(LS_KEYS.CAN);
+  localStorage.removeItem(LS_KEYS.ANN);
+  localStorage.removeItem(LS_KEYS.JOUR);
+  localStorage.removeItem(LS_KEYS.INCOME);
+  localStorage.removeItem(LS_KEYS.DEBT);
+  
+  // Reset to defaults
+  ensureDefaults();
+  
+  // Re-render everything
+  renderList();
+  renderAdminDays();
+  renderAnnonces();
+  renderAdminAnns();
+  renderJournal();
+  renderDebts();
+  renderAccounting();
+  populateDaySelect();
+  
+  alert('✅ تم مسح جميع البيانات!\nالموقع الآن كأنه جديد تماماً.');
+  
+  // Reload page to ensure clean state
+  setTimeout(() => location.reload(), 1000);
+}
 
 // clean up past days automatically
 function cleanPastDays(){
