@@ -98,9 +98,9 @@ All data stored in localStorage with keys:
 - `bp_journal` - Activity log
 
 ## Recent Changes
-### October 2025 - Mobile Menu Enhancement (2025-10-10 Latest)
+### October 2025 - Mobile Menu Enhancement + Professional Animations (2025-10-10 Latest)
 - 📱 **Major Mobile UI Improvement**: Added professional hamburger menu for mobile devices
-  - Clean header on mobile: Logo + Hamburger menu button only
+  - Clean header on mobile: Hamburger button on LEFT + Logo on RIGHT
   - Smooth sliding side menu with beautiful animations
   - All navigation links in the side menu with icons
   - Language toggle button integrated in mobile menu
@@ -111,11 +111,23 @@ All data stored in localStorage with keys:
   - Logo on the left
   - Full navigation menu in center
   - Language button on the right
-- ✨ **Animations**:
-  - Hamburger icon transforms to X when active
-  - Smooth slide-in effect for menu
-  - Hover effects on menu items
+- ✨ **Professional Animations Added**:
+  - **Page Load**: Fade-in and slide-up animations for cards
+  - **Navigation**: Slide-in animations for menu items
+  - **Hover Effects**:
+    - Cards lift up and scale on hover with golden shadows
+    - Contact items scale and highlight
+    - Social buttons with ripple wave effect
+    - Buttons scale and lift with shadow
+  - **Logo**: Continuous pulse animation, rotates on hover
+  - **Inputs**: Scale and glow on focus
+  - **Day Blocks**: Slide right on hover with golden glow
+  - **Client Rows**: Slide and highlight on hover
+  - **Badges**: Pulse animation for "En cours" status
+  - **Mobile Menu**: Sequential slide-in for menu items
+  - **Gold Shimmer**: Animated shimmer effect for special elements
 - 📐 **Responsive**: Breakpoint at 768px for mobile/desktop switch
+- 🚀 **Smooth Transitions**: All animations use cubic-bezier for professional feel
 
 ### October 2025 - Contact Page as Homepage (2025-10-10)
 - 🏠 Changed homepage from announcements to contact page
