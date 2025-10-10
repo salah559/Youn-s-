@@ -98,7 +98,26 @@ All data stored in localStorage with keys:
 - `bp_journal` - Activity log
 
 ## Recent Changes
-### October 2025 - Admin Page Mobile Optimization (2025-10-09 Latest)
+### October 2025 - Contact Page as Homepage (2025-10-10 Latest)
+- 🏠 Changed homepage from announcements to contact page
+- 👤 Added barber profile section with:
+  - Name: Younes Ouladnoui
+  - Professional title: Coiffeur Professionnel
+  - Profile image (logo) displayed prominently
+- 📅 Added working days section (bilingual Arabic/French):
+  - الأحد | الثلاثاء | الخميس | الجمعة
+  - Dimanche | Mardi | Jeudi | Vendredi
+- 📞 Updated contact information:
+  - Phone: 0776 798 751
+  - Email: younesouladnoui@gmaul.com
+- 🔗 Updated social media links:
+  - Facebook: https://www.facebook.com/share/17T52Ajojx/
+  - Instagram: https://www.instagram.com/younes_ouladnoui?igsh=M3cxdG9jamdsN2o3
+  - WhatsApp: Direct link to phone number
+- 🌐 All sections now bilingual (Arabic/French)
+- ✨ Professional layout with golden theme and elegant design
+
+### October 2025 - Admin Page Mobile Optimization (2025-10-09)
 - 📱 Major improvements to admin page on mobile devices
   - Scrollable tabs with horizontal scroll for all 6 admin sections
   - Visual scroll indicator (→) to show more tabs available
