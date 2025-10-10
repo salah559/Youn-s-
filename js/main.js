@@ -653,5 +653,34 @@ function cleanPastDays(){
   }
 }
 
+// Mobile Menu Toggle
+function toggleMobileMenu() {
+  const hamburger = document.querySelector('.hamburger');
+  const mobileMenu = document.querySelector('.mobile-menu');
+  const overlay = document.querySelector('.mobile-menu-overlay');
+  
+  hamburger.classList.toggle('active');
+  mobileMenu.classList.toggle('active');
+  overlay.classList.toggle('active');
+  
+  // Prevent body scroll when menu is open
+  if (mobileMenu.classList.contains('active')) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = '';
+  }
+}
+
+function closeMobileMenu() {
+  const hamburger = document.querySelector('.hamburger');
+  const mobileMenu = document.querySelector('.mobile-menu');
+  const overlay = document.querySelector('.mobile-menu-overlay');
+  
+  hamburger.classList.remove('active');
+  mobileMenu.classList.remove('active');
+  overlay.classList.remove('active');
+  document.body.style.overflow = '';
+}
+
 // initial renderers for pages
 window.addEventListener('DOMContentLoaded', ()=>{ cleanPastDays(); renderList(); renderAnnonces(); setupTabs(); try{ renderCancelledDays(); renderAdminDays(); renderAdminAnns(); renderDebts(); renderAccounting(); populateDaySelect(); }catch(e){} });
