@@ -1179,11 +1179,12 @@ button span {
   .hamburger {
     display: flex;
     order: -1;
+    margin-right: auto;
   }
   
   .logo {
-    order: 0;
-    margin-left: auto;
+    order: 1;
+    margin-left: 0;
   }
   
   .site-header {
