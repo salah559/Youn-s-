@@ -1,0 +1,9 @@
+{
+  "creds": {"user": "younes", "pass": "younes"},
+  "bookings": [],
+  "cancelled": [],
+  "annonces": [],
+  "journal": [],
+  "income": [],
+  "debt": []
+}
