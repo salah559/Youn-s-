@@ -1,7 +1,16 @@
 // js/main.js - final pro build: gold theme, modal login, admin tabs, announcements filtered
 
-// ملاحظة: دوال LS_KEYS, load, save, creds, saveCreds موجودة الآن في data-layer.js
-// إذا كان data-layer.js غير محمل، استخدم localStorage كاحتياطي
+// ملاحظة: دوال load, save, creds, saveCreds موجودة في api.js
+// LS_KEYS definition
+const LS_KEYS = {
+  CRED:'bp_creds', 
+  BOOK:'bp_bookings', 
+  CAN:'bp_cancelled', 
+  ANN:'bp_annonces', 
+  JOUR:'bp_journal', 
+  INCOME:'bp_income', 
+  DEBT:'bp_debt'
+};
 
 function nowISO(){ return new Date().toISOString(); }
 function uid(){ return 'id_' + Math.random().toString(36).slice(2,9); }
