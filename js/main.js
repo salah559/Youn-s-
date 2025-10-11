@@ -50,7 +50,7 @@ function addBooking(name,surname,phone){
   const days = getWorkingDays(180);
   for(const k of days){ 
     if((counts[k]||0) < capacity(k)){ 
-      const nb={id:uid(), name, surname, phone: phone||'', dayKey:k, dayLabel:dayLabelFromKey(k), inProgress:false, createdAt:nowISO()}; 
+      const nb={id:uid(), name, surname, phone: phone||'', dayKey:k, dayLabel:dayLabelFromKey(k), inProgress:false, completed:false, createdAt:nowISO()}; 
       bks.push(nb); 
       save(LS_KEYS.BOOK,bks); 
       const successMsg = (typeof t === 'function' ? t('reservation.success') : 'Réservé: ') + nb.dayLabel;
