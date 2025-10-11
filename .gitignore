@@ -47,3 +47,7 @@ package-lock.json
 .replit
 .upm
 .config/
+
+# Sensitive data
+admin.json
+data.json

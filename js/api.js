@@ -1,9 +1,8 @@
-// js/api.js - Shared server storage API
+// js/api.js - Shared server storage API (QUEUE-BASED VERSION)
 const API_URL = '/api/data';
 
-// In-memory cache for synchronous access
+// In-memory cache for PUBLIC shared data only (NO credentials)
 let serverData = {
-  creds: {user: 'younes', pass: 'younes'},
   bookings: [],
   cancelled: [],
   annonces: [],
@@ -14,8 +13,10 @@ let serverData = {
 
 let isLoaded = false;
 let isSyncing = false;
+let isSaving = false;
+let pendingSnapshot = null;
 
-// Load data from server (async, called on init)
+// Load PUBLIC data from server (async)
 async function syncFromServer() {
   if (isSyncing) return;
   isSyncing = true;
@@ -26,31 +27,52 @@ async function syncFromServer() {
       const data = await response.json();
       serverData = data;
       isLoaded = true;
-      console.log('✅ Data loaded from server');
       
       // Trigger refresh for any rendered content
       if (typeof renderList === 'function') renderList();
       if (typeof renderAnnonces === 'function') renderAnnonces();
       if (typeof renderAdminDays === 'function') renderAdminDays();
+      if (typeof renderDebts === 'function') renderDebts();
+      if (typeof renderAccounting === 'function') renderAccounting();
     }
   } catch (error) {
-    console.warn('⚠️ Could not load from server, using local data:', error);
+    console.warn('⚠️ Could not load from server:', error);
   }
   
   isSyncing = false;
 }
 
-// Save data to server (async, fire and forget)
+// Save PUBLIC data to server (async with queue)
 async function syncToServer() {
-  try {
-    await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(serverData)
-    });
-    console.log('✅ Data saved to server');
-  } catch (error) {
-    console.warn('⚠️ Could not save to server:', error);
+  // Take snapshot of current state IMMEDIATELY
+  pendingSnapshot = JSON.parse(JSON.stringify(serverData));
+  
+  // If already saving, the snapshot is queued - will be saved when current save completes
+  if (isSaving) return;
+  
+  // Process queue
+  while (pendingSnapshot !== null) {
+    isSaving = true;
+    const dataToSave = pendingSnapshot;
+    pendingSnapshot = null; // Clear pending before save
+    
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dataToSave)
+      });
+      
+      if (response.ok) {
+        console.log('✅ Data saved to server');
+      }
+    } catch (error) {
+      console.warn('⚠️ Could not save to server:', error);
+    }
+    
+    isSaving = false;
+    
+    // If new snapshot was queued while we were saving, loop continues
   }
 }
 
@@ -65,8 +87,17 @@ window.load = function(key) {
     'bp_income': 'income',
     'bp_debt': 'debt'
   };
+  
   const dataType = keyMap[key];
-  return serverData[dataType] || (dataType === 'creds' ? {user: 'younes', pass: 'younes'} : []);
+  
+  // Admin credentials stay in localStorage ONLY (not shared)
+  if (dataType === 'creds') {
+    const stored = localStorage.getItem('bp_creds');
+    return stored ? JSON.parse(stored) : {user: 'younes', pass: 'younes'};
+  }
+  
+  // All other data comes from server
+  return serverData[dataType] || [];
 };
 
 window.save = function(key, value) {
@@ -79,24 +110,35 @@ window.save = function(key, value) {
     'bp_income': 'income',
     'bp_debt': 'debt'
   };
+  
   const dataType = keyMap[key];
+  
+  // Admin credentials stay in localStorage ONLY (not shared)
+  if (dataType === 'creds') {
+    localStorage.setItem('bp_creds', JSON.stringify(value));
+    return;
+  }
+  
+  // Update serverData with new value IMMEDIATELY
   serverData[dataType] = value;
   
-  // Save to server asynchronously (fire and forget)
+  // Trigger save (will queue if save in progress)
   syncToServer();
 };
 
 window.creds = function() {
-  return serverData.creds || {user: 'younes', pass: 'younes'};
+  const stored = localStorage.getItem('bp_creds');
+  return stored ? JSON.parse(stored) : {user: 'younes', pass: 'younes'};
 };
 
 window.saveCreds = function(x) {
-  serverData.creds = x;
-  syncToServer();
+  localStorage.setItem('bp_creds', JSON.stringify(x));
 };
 
-// Auto-sync from server every 3 seconds to get updates from other users
-setInterval(syncFromServer, 3000);
+// Auto-sync from server every 2 seconds to get updates from other users
+setInterval(syncFromServer, 2000);
 
 // Initial load
 syncFromServer();
+
+console.log('🔒 Secure shared storage initialized (credentials kept local)');

@@ -55,9 +55,10 @@ This is a professional hair salon booking management system built with pure HTML
 
 ## Technology Stack
 - **Frontend**: Pure HTML5, CSS3, Vanilla JavaScript (ES6+)
-- **3D Graphics**: Three.js for animated particle background
-- **Data Storage**: Browser localStorage
-- **Server**: Python 3.11 HTTP server with cache-control headers
+- **3D Graphics**: Three.js for animated particle background  
+- **Data Storage**: Shared JSON file on server (data.json) with API sync
+- **Authentication**: Admin credentials stored separately in admin.json (server-side only)
+- **Server**: Python 3.12 HTTP API server with REST endpoints and cache-control headers
 - **Styling**: Custom CSS with:
   - Gradient animations
   - Smooth transitions and hover effects
@@ -179,6 +180,22 @@ All data stored in localStorage with keys:
 - 🌐 Added bilingual support (French/Arabic) for Contact page
 - 🎨 Enhanced CSS with professional social media buttons
 - ✅ All navigation updated across all pages
+
+### October 2025 - Shared Storage Implementation (2025-10-11 Latest)
+- 🔄 **Major Update**: Converted from localStorage to shared server storage
+  - All bookings now visible to ALL users (no more per-browser isolation)
+  - Created REST API with endpoints: GET/POST /api/data
+  - Auto-sync every 2 seconds to show real-time updates
+- 🔒 **Security Improvements**:
+  - Admin credentials separated into admin.json (server-side only)
+  - Credentials NO LONGER exposed via public API
+  - Public data.json contains only: bookings, announcements, journal, income, debts
+  - Added admin.json and data.json to .gitignore for security
+- 🛠️ **Technical Implementation**:
+  - server.py: Python HTTP server with REST API endpoints
+  - js/api.js: Client-side sync module with save queue
+  - Automatic conflict resolution with save queue system
+  - Credentials managed per-user in localStorage for admin access only
 
 ### October 2025 - GitHub Import Setup (2025-10-11)
 - ✅ Successfully imported GitHub repository to Replit
