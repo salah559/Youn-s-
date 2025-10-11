@@ -55,11 +55,8 @@ Thumbs.db
 *.log
 /tmp/logs/
 
-# Server file (لا نحتاجه في GitHub Pages)
-server.py
-
-# Old API file (لا نحتاجه مع Supabase)
-js/api.js
+# Note: server.py and js/api.js are kept for Replit environment
+# They're excluded from GitHub Pages deployment but needed for local/Replit development
 
 # Supabase local config (إذا كنت تستخدم Supabase CLI)
 .supabase/
