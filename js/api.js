@@ -65,9 +65,17 @@ async function syncToServer() {
       
       if (response.ok) {
         console.log('✅ Data saved to server');
+      } else {
+        // Server error - restore to queue for retry
+        console.warn('⚠️ Server error, will retry');
+        pendingSnapshot = dataToSave;
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1s before retry
       }
     } catch (error) {
-      console.warn('⚠️ Could not save to server:', error);
+      // Network error - restore to queue for retry
+      console.warn('⚠️ Network error, will retry:', error);
+      pendingSnapshot = dataToSave;
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1s before retry
     }
     
     isSaving = false;
