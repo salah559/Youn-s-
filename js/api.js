@@ -146,7 +146,11 @@ window.saveCreds = function(x) {
 // Auto-sync from server every 2 seconds to get updates from other users
 setInterval(syncFromServer, 2000);
 
-// Initial load
-syncFromServer();
+// Initial load - wait for DOM to be ready first
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', syncFromServer);
+} else {
+  syncFromServer();
+}
 
 console.log('🔒 Secure shared storage initialized (credentials kept local)');

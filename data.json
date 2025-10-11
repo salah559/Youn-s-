@@ -1,5 +1,28 @@
 {
-  "bookings": [],
+  "bookings": [
+    {
+      "id": "test1",
+      "name": "أحمد",
+      "surname": "محمد",
+      "phone": "0555123456",
+      "dayKey": "2025-10-12",
+      "dayLabel": "Dimanche 12/10/2025",
+      "inProgress": false,
+      "completed": false,
+      "createdAt": "2025-10-11T13:20:00.000Z"
+    },
+    {
+      "id": "test2",
+      "name": "فاطمة",
+      "surname": "علي",
+      "phone": "0666789012",
+      "dayKey": "2025-10-12",
+      "dayLabel": "Dimanche 12/10/2025",
+      "inProgress": false,
+      "completed": false,
+      "createdAt": "2025-10-11T13:25:00.000Z"
+    }
+  ],
   "cancelled": [],
   "annonces": [],
   "journal": [],
