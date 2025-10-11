@@ -1,310 +1,7 @@
 # Salon de Coiffure - Système de Réservation
 
 ## Overview
-This is a professional hair salon booking management system built with pure HTML, CSS, and JavaScript, enhanced with Three.js 3D background animations. The application uses localStorage for data persistence (client-side only) and provides:
-- Public booking interface with modern UI
-- Client list view with "in progress" status
-- Announcements page for salon updates
-- Admin panel for managing bookings, announcements, and settings
-- Interactive 3D particle background using Three.js
-
-## Project Structure
-- **Frontend**: Static HTML/CSS/JavaScript application with Three.js
-- **No Backend**: All data stored in browser's localStorage
-- **Pages**:
-  - `index.html` - Redirects to announcements page
-  - `annoncent.html` - Public announcements page
-  - `reservation.html` - Booking form for clients
-  - `list.html` - Public list of all bookings grouped by day
-  - `contact.html` - Contact page with salon info and social media links
-  - `admin.html` - Admin panel (requires login)
-- **Assets**:
-  - `css/style.css` - Enhanced professional gold on black theme with modern effects
-  - `js/main.js` - All application logic
-  - `js/background3d.js` - Three.js 3D particle background animation
-  - `logo.png` - Salon logo
-
-## Features
-### Client Features
-- Book appointments (name, surname, phone optional)
-- View all bookings organized by day
-- See which client is currently being served ("En cours")
-- View salon announcements and system notifications
-- Contact page with phone, email, address, and social media links
-- Fully bilingual interface (French/Arabic) with RTL support
-
-### Admin Features (Login: younes/younes)
-- Manage bookings: promote in queue, edit, delete, mark "in progress"
-- Cancel entire days (automatically reschedules clients)
-- Restore cancelled days
-- Create public announcements
-- Change admin credentials
-- View activity journal
-- Reset all data
-
-### Business Logic
-- Working days: Sunday (0), Tuesday (2), Thursday (4), Friday (5)
-- Capacity: Friday = 3 clients, Other days (Sunday, Tuesday, Thursday) = 5 clients
-- Automatic scheduling to next available day
-- Day cancellation with automatic rescheduling
-- **Cascade auto-advance on delete**: When admin deletes a booking, entire queue advances - everyone moves one day earlier across all future days
-- **Completed bookings**: When client pays/marked as debt (haircut done), booking is marked as completed:
-  - Stays in system but hidden from public/admin view
-  - Still counts toward day's capacity (keeps spot occupied)
-  - Prevents new bookings from filling the spot
-
-## Technology Stack
-- **Frontend**: Pure HTML5, CSS3, Vanilla JavaScript (ES6+)
-- **3D Graphics**: Three.js for animated particle background  
-- **Data Storage**: Shared JSON file on server (data.json) with API sync
-- **Authentication**: Admin credentials stored separately in admin.json (server-side only)
-- **Server**: Python 3.12 HTTP API server with REST endpoints and cache-control headers
-- **Styling**: Custom CSS with:
-  - Gradient animations
-  - Smooth transitions and hover effects
-  - Backdrop blur effects
-  - Responsive design
-  - Professional gold-on-black theme
-
-## Visual Enhancements (Latest Update)
-- **3D Background**: Interactive particle system with 3000+ golden particles
-  - Follows mouse movement for parallax effect
-  - Smooth rotation animation
-  - WebGL-based rendering with graceful fallback
-  - Optimized performance with additive blending
-  
-- **Enhanced UI/UX**:
-  - Improved navigation with hover animations
-  - Professional card designs with backdrop blur
-  - Enhanced form inputs with focus states
-  - Smooth button animations with gradient transitions
-  - Responsive modal dialogs with slide-up animation
-  - Improved tab navigation with active states
-  - Better spacing and typography
-  - Enhanced color scheme with brighter gold accents
-
-## Development Setup
-The project runs on a Python HTTP server (port 5000) with:
-- Cache-Control headers to prevent stale content
-- Static file serving
-- Support for all modern browsers
-- Address reuse for faster restarts
-
-## Data Structure
-All data stored in localStorage with keys:
-- `bp_creds` - Admin credentials
-- `bp_bookings` - Active bookings
-- `bp_cancelled` - Cancelled day snapshots
-- `bp_annonces` - Announcements (user and system)
-- `bp_journal` - Activity log
-
-## Recent Changes
-### October 2025 - Supabase Integration (GitHub Pages Ready) (2025-10-11 Latest)
-- 🌐 **Major Infrastructure Update**: Prepared complete Supabase integration for GitHub Pages deployment
-  - Created full Supabase backend infrastructure (PostgreSQL cloud database)
-  - Built complete data layer abstraction for seamless integration
-  - Developed comprehensive SQL schema with 6 tables and security policies
-  
-- 📊 **Database Architecture**:
-  - `bookings` - All client reservations with auto-timestamps
-  - `cancelled_days` - Cancelled day snapshots with restoration capability
-  - `announcements` - Public announcements and system notifications
-  - `journal` - Activity log for all operations
-  - `income` - Payment tracking
-  - `debt` - Debt management
-  - Row Level Security (RLS) enabled with public read/write policies
-  - Realtime subscriptions for instant updates across all clients
-  - Optimized indexes for performance
-  
-- 🔧 **Technical Files Created**:
-  - `js/supabase-config.js` - Configuration file (requires user's Supabase credentials)
-  - `js/supabase-client.js` - Complete CRUD operations for all tables
-  - `js/data-layer.js` - Bridge layer between main.js and Supabase
-  - `database-schema.sql` - SQL script to create all tables, indexes, and policies
-  - `SUPABASE_SETUP.md` - Step-by-step setup guide (in Arabic)
-  - `README.md` - Complete project documentation
-  - `CONVERSION_STATUS.md` - Current status and remaining steps
-  - `.gitignore` - Updated for GitHub deployment
-  
-- 📚 **Documentation**:
-  - Comprehensive setup guide for creating free Supabase account
-  - GitHub Pages deployment instructions
-  - Security warnings and best practices
-  - Troubleshooting section for common issues
-  
-- ⚠️ **Important Notes**:
-  - Supabase infrastructure is 100% complete and ready
-  - User needs to create Supabase account and update supabase-config.js with credentials
-  - Current implementation has known limitations (see CONVERSION_STATUS.md):
-    - Race condition on initial load (being addressed)
-    - Concurrent user write conflicts (architectural consideration)
-    - Public write access (security hardening recommended for production)
-  - For single-user scenarios, current implementation works well
-  - For multi-user production, additional hardening recommended
-  
-- 🚀 **Deployment Ready**:
-  - Can deploy to GitHub Pages immediately after Supabase setup
-  - Works 100% client-side (no Python server needed)
-  - Free hosting: GitHub Pages + Supabase free tier
-  - Real-time data sync across all users
-
-## Recent Changes
-### October 2025 - Mobile Menu Enhancement + Professional Animations (2025-10-10 Latest)
-- 📱 **Major Mobile UI Improvement**: Added professional hamburger menu for mobile devices
-  - Clean header on mobile: Hamburger button on LEFT + Logo on RIGHT
-  - Smooth sliding side menu with beautiful animations
-  - All navigation links in the side menu with icons
-  - Language toggle button integrated in mobile menu
-  - Dark overlay when menu is open
-  - Prevents body scrolling when menu is active
-  - Automatic menu close on navigation
-- 🎨 **Desktop Layout Preserved**: 
-  - Logo on the left
-  - Full navigation menu in center
-  - Language button on the right
-- ✨ **Professional Animations Added**:
-  - **Page Load**: Fade-in and slide-up animations for cards
-  - **Navigation**: Slide-in animations for menu items
-  - **Hover Effects**:
-    - Cards lift up and scale on hover with golden shadows
-    - Contact items scale and highlight
-    - Social buttons with ripple wave effect
-    - Buttons scale and lift with shadow
-  - **Logo**: Continuous pulse animation, rotates on hover
-  - **Inputs**: Scale and glow on focus
-  - **Day Blocks**: Slide right on hover with golden glow
-  - **Client Rows**: Slide and highlight on hover
-  - **Badges**: Pulse animation for "En cours" status
-  - **Mobile Menu**: Sequential slide-in for menu items
-  - **Gold Shimmer**: Animated shimmer effect for special elements
-- 📐 **Responsive**: Breakpoint at 768px for mobile/desktop switch
-- 🚀 **Smooth Transitions**: All animations use cubic-bezier for professional feel
-
-### October 2025 - Contact Page as Homepage (2025-10-10)
-- 🏠 Changed homepage from announcements to contact page
-- 👤 Added barber profile section with:
-  - Name: Younes Ouladnoui
-  - Professional title: Coiffeur Professionnel
-  - Profile image (logo) displayed prominently
-- 📅 Added working days section (bilingual Arabic/French):
-  - الأحد | الثلاثاء | الخميس | الجمعة
-  - Dimanche | Mardi | Jeudi | Vendredi
-- 📞 Updated contact information:
-  - Phone: 0776 798 751
-  - Email: younesouladnoui@gmaul.com
-- 🔗 Updated social media links:
-  - Facebook: https://www.facebook.com/share/17T52Ajojx/
-  - Instagram: https://www.instagram.com/younes_ouladnoui?igsh=M3cxdG9jamdsN2o3
-  - WhatsApp: Direct link to phone number
-- 🌐 All sections now bilingual (Arabic/French)
-- ✨ Professional layout with golden theme and elegant design
-
-### October 2025 - Admin Page Mobile Optimization (2025-10-09)
-- 📱 Major improvements to admin page on mobile devices
-  - Scrollable tabs with horizontal scroll for all 6 admin sections
-  - Visual scroll indicator (→) to show more tabs available
-  - Optimized button layout: 3 columns grid for client actions
-  - Full-width buttons for settings and announcements on mobile
-  - Better spacing and touch targets for all interactive elements
-- 🔧 Fixed form validation warnings
-  - Wrapped password fields in proper forms
-  - Added autocomplete attributes for better UX
-- 🎨 Enhanced mobile layout
-  - Compact cards for accounting and debts on small screens
-  - Improved textarea size and responsiveness
-  - Better day-title button layout (full-width on mobile)
-  - Optimized client-row display with vertical stacking
-- ✅ All admin features now fully usable on phones and tablets
-
-### October 2025 - Contact Page & Mobile Improvements (2025-10-09)
-- ✨ Added new Contact page with salon information
-  - Phone number, email, address, and hours of operation
-  - Social media links (Facebook, Instagram, WhatsApp)
-  - Beautiful card-based design with hover effects
-  - Fully responsive for mobile devices
-- 📱 Significantly improved mobile experience
-  - Optimized navigation for small screens (4 links fit perfectly)
-  - Enhanced responsive design for tablets and phones
-  - Improved touch targets and button sizes
-  - Better spacing and layout on mobile devices
-- 🌐 Added bilingual support (French/Arabic) for Contact page
-- 🎨 Enhanced CSS with professional social media buttons
-- ✅ All navigation updated across all pages
-
-### October 2025 - Shared Storage Implementation (2025-10-11 Latest)
-- 🔄 **Major Update**: Converted from localStorage to shared server storage
-  - All bookings now visible to ALL users (no more per-browser isolation)
-  - Created REST API with endpoints: GET/POST /api/data
-  - Auto-sync every 2 seconds to show real-time updates
-- 🔒 **Security Improvements**:
-  - Admin credentials separated into admin.json (server-side only)
-  - Credentials NO LONGER exposed via public API
-  - Public data.json contains only: bookings, announcements, journal, income, debts
-  - Added admin.json and data.json to .gitignore for security
-- 🛠️ **Technical Implementation**:
-  - server.py: Python HTTP server with REST API endpoints
-  - js/api.js: Client-side sync module with save queue
-  - Automatic conflict resolution with save queue system
-  - Credentials managed per-user in localStorage for admin access only
-
-### October 2025 - Fixed Shared Storage Display Issue (2025-10-11 Latest)
-- 🐛 **Fixed Critical Bug**: Bookings now display correctly for all users
-- 🔧 **Root Cause**: JavaScript loading order issue - api.js was loading before main.js
-- ✅ **Solution**: 
-  - Added `defer` attribute to api.js in all HTML pages
-  - Ensured main.js loads before api.js (defines render functions first)
-  - Fixed DOMContentLoaded timing for initial data sync
-- ✅ **Verified**: All pages now correctly display shared bookings from server
-- ✅ **Tested**: Multi-user scenario works - all users see same bookings
-- 📊 **Impact**: System now fully functional for barber shop use
-
-### October 2025 - Fresh GitHub Import Setup (2025-10-11 - Latest)
-- ✅ Successfully imported fresh GitHub repository clone to Replit
-- ✅ Installed Python 3.11 and Node.js 20 modules
-- ✅ Installed Three.js dependency via npm (v0.180.0)
-- ✅ Configured workflow "Server" for automatic startup on port 5000 with webview output
-- ✅ **Fixed HTML files**: Switched from Supabase to Python API system
-  - Updated all HTML files (contact, reservation, list, annoncent, admin) to use js/api.js
-  - Removed Supabase library and related files from HTML loading
-  - System now uses Python server backend with shared data.json storage
-- ✅ **Fixed JavaScript errors**: Added LS_KEYS constant to main.js
-  - Resolved "LS_KEYS is not defined" error
-  - All pages now load and render correctly
-- ✅ Verified server runs correctly with cache-control headers on 0.0.0.0:5000
-- ✅ Tested all pages working perfectly:
-  - Contact page (homepage) - displays barber profile and contact info
-  - Reservation page - booking form functional
-  - List page - displays bookings with shared server data
-  - Announcements page - loads without errors
-  - Admin page - accessible via logo click
-- ✅ Configured deployment for VM (stateful) using python3 server.py
-- ✅ Updated .gitignore comments to reflect Replit environment needs
-- ✅ API endpoints verified: GET/POST /api/data working correctly
-- ✅ Auto-sync system operational (2-second intervals)
-- ✅ Project fully operational in Replit environment with shared storage
-- 📝 Note: Supabase integration files remain in codebase for future use but are not loaded
-
-### October 2025 - Business Logic Update (2025-10-08)
-- 🔧 Capacity: Friday = 3 clients, Other working days = 5 clients
-- 🔄 Cascade auto-advance: When admin deletes a client, entire queue advances across all days - each person moves one day earlier
-- 🚫 Completed bookings: When client pays or is marked as debt (haircut complete), the spot stays occupied and doesn't get filled by new bookings
-- 👁️ Hidden completed: Completed clients are hidden from public and admin views but still count toward daily capacity
-- 📋 System announcements: Auto-advance actions are logged as system announcements
-
-### October 2025 - Major Visual Upgrade
-- ✨ Added Three.js 3D particle background animation
-- 🎨 Complete CSS redesign for professional appearance
-- 🔧 Fixed form validation warnings by wrapping inputs properly
-- ⚡ Enhanced all animations and transitions
-- 🎯 Improved button hover effects and interactions
-- 📱 Better responsive design for mobile devices
-- 🛡️ Added WebGL fallback for unsupported environments
-
-### Initial Setup (2025-10-07)
-- Configured Python HTTP server with proper cache headers
-- Set up workflow for automatic server startup
-- Added .gitignore for Python and Replit files
-- Configured deployment settings
+This project is a professional hair salon booking management system designed with a modern user interface and interactive 3D background animations. It provides a public booking interface, a client list view, an announcements page, and a comprehensive admin panel. The system is designed for a single-salon operation, focusing on efficient appointment management, automatic scheduling, and a visually engaging user experience. The business vision is to offer a streamlined, visually appealing, and highly functional booking solution for hair salons, enhancing both client interaction and administrative efficiency.
 
 ## User Preferences
 - Language: French (fr)
@@ -312,16 +9,37 @@ All data stored in localStorage with keys:
 - No database backend (localStorage only)
 - Enhanced with Three.js 3D graphics
 
-## Performance Notes
-- Three.js background is optimized with:
-  - Limited particle count (3000)
-  - Efficient buffer geometry
-  - Additive blending for better performance
-  - Automatic cleanup on errors
-  - Graceful degradation without WebGL
-  
-## Browser Compatibility
-- Modern browsers with ES6+ support
-- WebGL support for 3D background (optional)
-- Fallback CSS background for older browsers
-- Responsive design for desktop and mobile
+## System Architecture
+The application is a pure frontend system built with HTML, CSS, and Vanilla JavaScript, with all data stored client-side using `localStorage`.
+
+### UI/UX Decisions
+- **Theme**: Professional gold-on-black theme with modern effects, gradient animations, smooth transitions, hover effects, and backdrop blur.
+- **3D Background**: Interactive particle system using Three.js with 3000+ golden particles, mouse-following parallax, and smooth rotation. Optimized for performance with WebGL and a graceful fallback.
+- **Responsiveness**: Fully responsive design with a breakpoint at 768px for mobile/desktop. Features a professional hamburger menu for mobile with smooth sliding animations.
+- **Animations**: Incorporates extensive animations including page load fade-in/slide-up, navigation slide-in, card lift/scale on hover, button transitions, and a continuous logo pulse.
+- **Bilingual Support**: Fully bilingual interface (French/Arabic) with RTL support.
+
+### Technical Implementations
+- **Frontend**: HTML5, CSS3, Vanilla JavaScript (ES6+), Three.js for 3D graphics.
+- **Data Storage**: `localStorage` is used for all data persistence, including bookings, admin credentials, announcements, and activity logs.
+- **Admin Panel**: Secured with login credentials (`younes/younes` by default). Provides features for managing bookings (promote, edit, delete, mark "in progress"), cancelling/restoring days, creating announcements, changing admin credentials, and viewing activity.
+- **Business Logic**:
+    - **Working Days**: Sunday, Tuesday, Thursday, Friday.
+    - **Capacity**: Friday = 3 clients; other days = 5 clients.
+    - **Automatic Scheduling**: New bookings are automatically scheduled to the next available slot.
+    - **Day Cancellation**: Cancelling a day automatically reschedules clients to the next available slots.
+    - **Cascade Auto-Advance**: Deleting a booking causes all subsequent bookings to shift one day earlier across all future days.
+    - **Completed Bookings**: Marked as completed, hidden from public/admin views but still count towards daily capacity to prevent new bookings from filling the spot.
+
+### Feature Specifications
+- **Client Features**: Book appointments, view all bookings by day, see "in progress" clients, view salon announcements, contact page with salon info and social media.
+- **Admin Features**: Comprehensive management of bookings, announcements, and system settings.
+- **Visual Enhancements**: 3D particle background, improved navigation, professional card designs, enhanced form inputs, smooth button animations, responsive modal dialogs, improved tab navigation, and refined typography.
+
+### System Design Choices
+- **Client-Side Only**: All operations are performed within the browser, leveraging `localStorage` for data persistence. This avoids the need for a separate backend server for core functionality.
+- **Modularity**: Code is organized into `main.js` for application logic and `background3d.js` for Three.js specific code.
+- **Static Assets**: Utilizes standard HTML, CSS, and JavaScript files, making it suitable for static hosting.
+
+## External Dependencies
+- **Three.js**: Used for creating the interactive 3D particle background animation.
