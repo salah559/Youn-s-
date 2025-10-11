@@ -94,7 +94,7 @@ function load(key) {
 }
 
 // دالة save بديلة - تحفظ في Supabase
-async function save(key, value) {
+function save(key, value) {
   const keyMap = {
     'bp_bookings': 'bookings',
     'bp_cancelled': 'cancelled',
@@ -116,15 +116,29 @@ async function save(key, value) {
   // تحديث الكاش مباشرة
   dataCache[dataKey] = value;
   
-  // حفظ في Supabase بدون انتظار (async)
-  try {
-    if (dataKey === 'bookings') {
-      await saveAllBookings(value);
+  // حفظ في Supabase بشكل غير متزامن (fire and forget)
+  (async () => {
+    try {
+      if (dataKey === 'bookings') {
+        await saveAllBookings(value);
+        console.log('💾 تم حفظ الحجوزات في Supabase');
+      } else if (dataKey === 'annonces') {
+        await saveAllAnnouncements(value);
+        console.log('💾 تم حفظ الإعلانات في Supabase');
+      } else if (dataKey === 'journal') {
+        await saveAllJournal(value);
+        console.log('💾 تم حفظ السجل في Supabase');
+      } else if (dataKey === 'income') {
+        await saveAllIncome(value);
+        console.log('💾 تم حفظ الدخل في Supabase');
+      } else if (dataKey === 'debt') {
+        await saveAllDebt(value);
+        console.log('💾 تم حفظ الديون في Supabase');
+      }
+    } catch (error) {
+      console.error('خطأ في حفظ البيانات:', error);
     }
-    // يمكن إضافة save للجداول الأخرى هنا إذا لزم الأمر
-  } catch (error) {
-    console.error('خطأ في حفظ البيانات:', error);
-  }
+  })();
 }
 
 function creds() {
@@ -184,6 +198,15 @@ async function saveAnnouncement(announcement) {
   }
 }
 
+// حفظ جميع الإعلانات
+async function saveAllAnnouncements(announcements) {
+  const client = initSupabase();
+  await client.from(SUPABASE_CONFIG.tables.annonces).delete().neq('id', '');
+  if (announcements.length > 0) {
+    await client.from(SUPABASE_CONFIG.tables.annonces).insert(announcements);
+  }
+}
+
 // دوال للسجل
 async function saveJournal(entry) {
   try {
@@ -193,6 +216,15 @@ async function saveJournal(entry) {
   } catch (error) {
     console.error('خطأ في حفظ السجل:', error);
     throw error;
+  }
+}
+
+// حفظ جميع سجلات الجورنال
+async function saveAllJournal(journal) {
+  const client = initSupabase();
+  await client.from(SUPABASE_CONFIG.tables.journal).delete().neq('id', '');
+  if (journal.length > 0) {
+    await client.from(SUPABASE_CONFIG.tables.journal).insert(journal);
   }
 }
 
@@ -208,6 +240,15 @@ async function saveIncome(income) {
   }
 }
 
+// حفظ جميع الدخل
+async function saveAllIncome(income) {
+  const client = initSupabase();
+  await client.from(SUPABASE_CONFIG.tables.income).delete().neq('id', '');
+  if (income.length > 0) {
+    await client.from(SUPABASE_CONFIG.tables.income).insert(income);
+  }
+}
+
 // دوال للديون
 async function saveDebtData(debt) {
   try {
@@ -217,6 +258,15 @@ async function saveDebtData(debt) {
   } catch (error) {
     console.error('خطأ في حفظ الدين:', error);
     throw error;
+  }
+}
+
+// حفظ جميع الديون
+async function saveAllDebt(debt) {
+  const client = initSupabase();
+  await client.from(SUPABASE_CONFIG.tables.debt).delete().neq('id', '');
+  if (debt.length > 0) {
+    await client.from(SUPABASE_CONFIG.tables.debt).insert(debt);
   }
 }
 
@@ -262,15 +312,11 @@ function setupRealtimeSubscriptions() {
   });
 }
 
-// تهيئة عند تحميل الصفحة
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    initData();
-    setupRealtimeSubscriptions();
-  });
-} else {
-  initData();
+// تهيئة فورية عند تحميل السكريبت
+(async function() {
+  await initData();
   setupRealtimeSubscriptions();
-}
+  console.log('✅ طبقة البيانات جاهزة وتم تحميل البيانات من Supabase');
+})();
 
 console.log('📊 تم تحميل طبقة البيانات (Supabase)');

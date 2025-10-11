@@ -104,14 +104,20 @@ CREATE POLICY "Allow public update on bookings" ON bookings FOR UPDATE USING (tr
 CREATE POLICY "Allow public delete on bookings" ON bookings FOR DELETE USING (true);
 
 CREATE POLICY "Allow public insert on cancelled_days" ON cancelled_days FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public update on cancelled_days" ON cancelled_days FOR UPDATE USING (true);
 CREATE POLICY "Allow public delete on cancelled_days" ON cancelled_days FOR DELETE USING (true);
 
 CREATE POLICY "Allow public insert on announcements" ON announcements FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public update on announcements" ON announcements FOR UPDATE USING (true);
 CREATE POLICY "Allow public delete on announcements" ON announcements FOR DELETE USING (true);
 
 CREATE POLICY "Allow public insert on journal" ON journal FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public update on journal" ON journal FOR UPDATE USING (true);
+CREATE POLICY "Allow public delete on journal" ON journal FOR DELETE USING (true);
 
 CREATE POLICY "Allow public insert on income" ON income FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public update on income" ON income FOR UPDATE USING (true);
+CREATE POLICY "Allow public delete on income" ON income FOR DELETE USING (true);
 
 CREATE POLICY "Allow public insert on debt" ON debt FOR INSERT WITH CHECK (true);
 CREATE POLICY "Allow public update on debt" ON debt FOR UPDATE USING (true);

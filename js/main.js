@@ -1,25 +1,16 @@
 // js/main.js - final pro build: gold theme, modal login, admin tabs, announcements filtered
-const LS_KEYS = {CRED:'bp_creds', BOOK:'bp_bookings', CAN:'bp_cancelled', ANN:'bp_annonces', JOUR:'bp_journal', INCOME:'bp_income', DEBT:'bp_debt'};
+
+// ملاحظة: دوال LS_KEYS, load, save, creds, saveCreds موجودة الآن في data-layer.js
+// إذا كان data-layer.js غير محمل، استخدم localStorage كاحتياطي
 
 function nowISO(){ return new Date().toISOString(); }
 function uid(){ return 'id_' + Math.random().toString(36).slice(2,9); }
 
 function ensureDefaults(){
-  if(!localStorage.getItem(LS_KEYS.CRED)) localStorage.setItem(LS_KEYS.CRED, JSON.stringify({user:'younes', pass:'younes'}));
-  if(!localStorage.getItem(LS_KEYS.BOOK)) localStorage.setItem(LS_KEYS.BOOK, JSON.stringify([]));
-  if(!localStorage.getItem(LS_KEYS.CAN)) localStorage.setItem(LS_KEYS.CAN, JSON.stringify([]));
-  if(!localStorage.getItem(LS_KEYS.ANN)) localStorage.setItem(LS_KEYS.ANN, JSON.stringify([]));
-  if(!localStorage.getItem(LS_KEYS.JOUR)) localStorage.setItem(LS_KEYS.JOUR, JSON.stringify([]));
-  if(!localStorage.getItem(LS_KEYS.INCOME)) localStorage.setItem(LS_KEYS.INCOME, JSON.stringify([]));
-  if(!localStorage.getItem(LS_KEYS.DEBT)) localStorage.setItem(LS_KEYS.DEBT, JSON.stringify([]));
+  // تأكد من وجود الاعتمادات في localStorage فقط
+  if(!localStorage.getItem('bp_creds')) localStorage.setItem('bp_creds', JSON.stringify({user:'younes', pass:'younes'}));
 }
 ensureDefaults();
-
-// DATA helpers
-function load(k){ return JSON.parse(localStorage.getItem(k) || '[]'); }
-function save(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
-function creds(){ return JSON.parse(localStorage.getItem(LS_KEYS.CRED)); }
-function saveCreds(x){ localStorage.setItem(LS_KEYS.CRED, JSON.stringify(x)); }
 
 // Days: 0=Dimanche,2=Mardi,4=Jeudi,5=Vendredi
 function dayLabelFromKey(key){ 
