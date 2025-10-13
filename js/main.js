@@ -725,7 +725,7 @@ function renderWorkingDaysConfig() {
   container.innerHTML = '';
   
   if (workDays.length === 0) {
-    container.innerHTML = '<p class="muted">Aucun jour de travail configuré</p>';
+    container.innerHTML = '<p class="muted">' + (typeof t === 'function' ? t('workdays.none') : 'Aucun jour de travail configuré') + '</p>';
     return;
   }
   
@@ -756,15 +756,15 @@ function renderWorkingDaysConfig() {
             📅 ${dayNames[day.dayOfWeek]}
           </div>
           <div class="muted" style="font-size: 14px;">
-            Capacité: <strong style="color: var(--gold1);">${day.capacity}</strong> clients
+            ${typeof t === 'function' ? t('workdays.capacity') : 'Capacité'}: <strong style="color: var(--gold1);">${day.capacity}</strong> ${typeof t === 'function' ? t('workdays.clients') : 'clients'}
           </div>
         </div>
         <div style="display: flex; gap: 8px; flex-direction: column;">
           <button onclick="editDayCapacity(${day.dayOfWeek})" style="background: rgba(40, 167, 69, 0.8);">
-            <span>Modifier capacité</span>
+            <span>${typeof t === 'function' ? t('workdays.modify') : 'Modifier capacité'}</span>
           </button>
-          <button onclick="if(confirm('Supprimer ce jour de travail?')) removeWorkingDay(${day.dayOfWeek})" style="background: rgba(220, 53, 69, 0.8);">
-            <span>Supprimer</span>
+          <button onclick="if(confirm('${typeof t === 'function' ? t('workdays.remove') : 'Supprimer ce jour de travail?'}')) removeWorkingDay(${day.dayOfWeek})" style="background: rgba(220, 53, 69, 0.8);">
+            <span>${typeof t === 'function' ? t('button.delete') : 'Supprimer'}</span>
           </button>
         </div>
       </div>
@@ -797,27 +797,27 @@ function addWorkingDay() {
   }
   
   if (availableDays.length === 0) {
-    alert('Tous les jours de la semaine sont déjà configurés!');
+    alert(typeof t === 'function' ? t('workdays.alreadyconfigured') : 'Tous les jours de la semaine sont déjà configurés!');
     return;
   }
   
   const options = availableDays.map(d => `${d.num}. ${d.name}`).join('\n');
-  const choice = prompt(`Choisir le jour (numéro):\n${options}`);
+  const choice = prompt((typeof t === 'function' ? t('workdays.choose') : 'Choisir le jour (numéro)') + ':\n' + options);
   
   if (choice === null) return;
   
   const dayNum = parseInt(choice);
   if (isNaN(dayNum) || dayNum < 0 || dayNum > 6 || existingDays.includes(dayNum)) {
-    alert('Choix invalide');
+    alert(typeof t === 'function' ? t('workdays.invalid') : 'Choix invalide');
     return;
   }
   
-  const capacity = prompt('Capacité (nombre de clients):', '5');
+  const capacity = prompt(typeof t === 'function' ? t('workdays.capacityinput') : 'Capacité (nombre de clients):', '5');
   if (capacity === null) return;
   
   const cap = parseInt(capacity);
   if (isNaN(cap) || cap < 1 || cap > 20) {
-    alert('Capacité invalide (1-20)');
+    alert(typeof t === 'function' ? t('workdays.capacityinvalid') : 'Capacité invalide (1-20)');
     return;
   }
   
@@ -865,12 +865,12 @@ function editDayCapacity(dayOfWeek) {
   
   if (!day) return;
   
-  const newCapacity = prompt(`Nouvelle capacité pour ${day.dayName}:`, day.capacity);
+  const newCapacity = prompt((typeof t === 'function' ? t('workdays.newcapacity') : 'Nouvelle capacité pour') + ' ' + day.dayName + ':', day.capacity);
   if (newCapacity === null) return;
   
   const cap = parseInt(newCapacity);
   if (isNaN(cap) || cap < 1 || cap > 20) {
-    alert('Capacité invalide (1-20)');
+    alert(typeof t === 'function' ? t('workdays.capacityinvalid') : 'Capacité invalide (1-20)');
     return;
   }
   
@@ -880,7 +880,7 @@ function editDayCapacity(dayOfWeek) {
   renderWorkingDaysConfig();
   renderAdminDays();
   renderList();
-  alert(`✅ Capacité mise à jour: ${cap} clients`);
+  alert('✅ ' + (typeof t === 'function' ? t('workdays.updated') : 'Capacité mise à jour') + ': ' + cap + ' ' + (typeof t === 'function' ? t('workdays.clients') : 'clients'));
 }
 
 // initial renderers for pages

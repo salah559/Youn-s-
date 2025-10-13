@@ -87,7 +87,27 @@ const translations = {
         'contact.social': 'Réseaux sociaux',
         'contact.facebook': 'Facebook',
         'contact.instagram': 'Instagram',
-        'contact.whatsapp': 'WhatsApp'
+        'contact.whatsapp': 'WhatsApp',
+        
+        // Workdays
+        'workdays.title': 'Jours de travail',
+        'workdays.config': 'Configuration des jours de travail',
+        'workdays.manage': 'Gérez les jours d\'ouverture du salon et la capacité de chaque jour.',
+        'workdays.add': 'Ajouter un jour de travail',
+        'workdays.none': 'Aucun jour de travail configuré',
+        'workdays.capacity': 'Capacité',
+        'workdays.clients': 'clients',
+        'workdays.modify': 'Modifier capacité',
+        'workdays.remove': 'Supprimer ce jour de travail?',
+        'workdays.choose': 'Choisir le jour (numéro)',
+        'workdays.invalid': 'Choix invalide',
+        'workdays.capacityinput': 'Capacité (nombre de clients):',
+        'workdays.capacityinvalid': 'Capacité invalide (1-20)',
+        'workdays.newcapacity': 'Nouvelle capacité pour',
+        'workdays.success': 'ajouté avec succès!',
+        'workdays.removed': 'supprimé!',
+        'workdays.updated': 'Capacité mise à jour:',
+        'workdays.alreadyconfigured': 'Tous les jours de la semaine sont déjà configurés!'
     },
     ar: {
         // Navigation
@@ -189,7 +209,27 @@ const translations = {
         'contact.social': 'وسائل التواصل الاجتماعي',
         'contact.facebook': 'فيسبوك',
         'contact.instagram': 'إنستغرام',
-        'contact.whatsapp': 'واتساب'
+        'contact.whatsapp': 'واتساب',
+        
+        // Workdays
+        'workdays.title': 'أيام العمل',
+        'workdays.config': 'تكوين أيام العمل',
+        'workdays.manage': 'إدارة أيام عمل الصالون وسعة كل يوم.',
+        'workdays.add': 'إضافة يوم عمل',
+        'workdays.none': 'لا توجد أيام عمل مُكونة',
+        'workdays.capacity': 'السعة',
+        'workdays.clients': 'عملاء',
+        'workdays.modify': 'تعديل السعة',
+        'workdays.remove': 'حذف يوم العمل؟',
+        'workdays.choose': 'اختر اليوم (الرقم)',
+        'workdays.invalid': 'اختيار غير صحيح',
+        'workdays.capacityinput': 'السعة (عدد العملاء):',
+        'workdays.capacityinvalid': 'سعة غير صحيحة (1-20)',
+        'workdays.newcapacity': 'السعة الجديدة لـ',
+        'workdays.success': 'تمت الإضافة بنجاح!',
+        'workdays.removed': 'تم الحذف!',
+        'workdays.updated': 'تم تحديث السعة:',
+        'workdays.alreadyconfigured': 'جميع أيام الأسبوع مُكونة بالفعل!'
     }
 };
 

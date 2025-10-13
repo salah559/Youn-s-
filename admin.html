@@ -77,7 +77,7 @@
   <section id="adminArea" class="card hidden">
     <div class="tabs">
       <button class="tab-btn active" data-tab="tab-res"><span data-i18n="admin.tab.bookings">Gestion réservations</span></button>
-      <button class="tab-btn" data-tab="tab-workdays"><span>📅 Jours de travail</span></button>
+      <button class="tab-btn" data-tab="tab-workdays"><span data-i18n="workdays.title">📅 Jours de travail</span></button>
       <button class="tab-btn" data-tab="tab-accounting"><span data-i18n="admin.tab.accounting">💰 Comptabilité</span></button>
       <button class="tab-btn" data-tab="tab-debts"><span data-i18n="admin.tab.debts">📝 Dettes</span></button>
       <button class="tab-btn" data-tab="tab-ann"><span data-i18n="admin.tab.announcements">Annonces</span></button>
@@ -94,12 +94,12 @@
     </div>
 
     <div id="tab-workdays" class="tab panel hidden">
-      <h3 style="color: var(--gold1); margin-bottom: 20px;">📅 Configuration des jours de travail</h3>
-      <p class="muted" style="margin-bottom: 20px;">Gérez les jours d'ouverture du salon et la capacité de chaque jour.</p>
+      <h3 style="color: var(--gold1); margin-bottom: 20px;"><span data-i18n="workdays.config">📅 Configuration des jours de travail</span></h3>
+      <p class="muted" style="margin-bottom: 20px;" data-i18n="workdays.manage">Gérez les jours d'ouverture du salon et la capacité de chaque jour.</p>
       
       <div style="margin-bottom: 25px;">
         <button onclick="addWorkingDay()" style="background: rgba(40, 167, 69, 0.8); padding: 12px 24px; font-size: 16px;">
-          <span>➕ Ajouter un jour de travail</span>
+          <span data-i18n="workdays.add">➕ Ajouter un jour de travail</span>
         </button>
       </div>
       
