@@ -9,6 +9,7 @@ let dataCache = {
   journal: [],
   income: [],
   debt: [],
+  workdays: [],
   creds: {user: 'younes', pass: 'younes'} // تبقى في localStorage
 };
 
@@ -71,7 +72,8 @@ const LS_KEYS = {
   ANN:'bp_annonces', 
   JOUR:'bp_journal', 
   INCOME:'bp_income', 
-  DEBT:'bp_debt'
+  DEBT:'bp_debt',
+  WORKDAYS:'bp_workdays'
 };
 
 function load(key) {
@@ -82,12 +84,19 @@ function load(key) {
     'bp_journal': 'journal',
     'bp_income': 'income',
     'bp_debt': 'debt',
-    'bp_creds': 'creds'
+    'bp_creds': 'creds',
+    'bp_workdays': 'workdays'
   };
   
   const dataKey = keyMap[key];
   if (dataKey === 'creds') {
     return dataCache.creds;
+  }
+  
+  // أيام العمل تُقرأ من localStorage مباشرة
+  if (dataKey === 'workdays') {
+    const stored = localStorage.getItem('bp_workdays');
+    return stored ? JSON.parse(stored) : [];
   }
   
   return dataCache[dataKey] || [];

@@ -82,6 +82,10 @@
       <input id="surname" required>
       <label data-i18n="reservation.phone">Téléphone (optionnel)</label>
       <input id="phone" data-i18n="reservation.phone.placeholder" placeholder="Laisser vide si vous préférez">
+      <label>Choisir le jour *</label>
+      <select id="daySelect" required style="width: 100%; padding: 12px; border: 1px solid rgba(202, 164, 60, 0.3); border-radius: 8px; background: rgba(0,0,0,0.3); color: var(--gold1); font-size: 15px; margin-bottom: 16px;">
+        <option value="">-- Sélectionner un jour --</option>
+      </select>
       <div class="actions">
         <button type="submit"><span data-i18n="reservation.button">Réserver</span></button>
       </div>
@@ -108,11 +112,62 @@
 </div>
 
 <script>
+// ملء قائمة الأيام المتاحة عند تحميل الصفحة
+function populateAvailableDays() {
+  const select = document.getElementById('daySelect');
+  if (!select) return;
+  
+  // مسح الخيارات الحالية (ماعدا الأولى)
+  while (select.options.length > 1) {
+    select.remove(1);
+  }
+  
+  const workingDays = getWorkingDays(60); // الأيام الـ60 القادمة
+  const bookings = load(LS_KEYS.BOOK);
+  
+  workingDays.forEach(dayKey => {
+    const dayCapacity = capacity(dayKey);
+    const dayBookingsCount = bookings.filter(b => b.dayKey === dayKey).length;
+    const available = dayCapacity - dayBookingsCount;
+    
+    if (available > 0) {
+      const option = document.createElement('option');
+      option.value = dayKey;
+      option.textContent = `${dayLabelFromKey(dayKey)} (${available} place${available > 1 ? 's' : ''} disponible${available > 1 ? 's' : ''})`;
+      select.appendChild(option);
+    }
+  });
+  
+  if (select.options.length === 1) {
+    const option = document.createElement('option');
+    option.value = '';
+    option.textContent = 'Aucun jour disponible pour le moment';
+    option.disabled = true;
+    select.appendChild(option);
+  }
+}
+
+// تحديث القائمة عند تحميل الصفحة
+window.addEventListener('DOMContentLoaded', () => {
+  populateAvailableDays();
+});
+
+// إرسال النموذج
 document.getElementById('resForm').addEventListener('submit', function(e){
   e.preventDefault();
-  addBooking(document.getElementById('name').value.trim(), document.getElementById('surname').value.trim(), document.getElementById('phone').value.trim());
-  this.reset();
-  renderList();
+  
+  const name = document.getElementById('name').value.trim();
+  const surname = document.getElementById('surname').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const selectedDay = document.getElementById('daySelect').value;
+  
+  const success = addBooking(name, surname, phone, selectedDay);
+  
+  if (success) {
+    this.reset();
+    populateAvailableDays(); // تحديث القائمة
+    renderList();
+  }
 });
 </script>
 </body>

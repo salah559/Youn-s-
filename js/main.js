@@ -1,16 +1,7 @@
 // js/main.js - final pro build: gold theme, modal login, admin tabs, announcements filtered
 
-// ملاحظة: دوال load, save, creds, saveCreds موجودة في api.js
-// LS_KEYS definition
-const LS_KEYS = {
-  CRED:'bp_creds', 
-  BOOK:'bp_bookings', 
-  CAN:'bp_cancelled', 
-  ANN:'bp_annonces', 
-  JOUR:'bp_journal', 
-  INCOME:'bp_income', 
-  DEBT:'bp_debt'
-};
+// ملاحظة: دوال load, save, creds, saveCreds موجودة في data-layer.js
+// LS_KEYS معرّف في data-layer.js
 
 function nowISO(){ return new Date().toISOString(); }
 function uid(){ return 'id_' + Math.random().toString(36).slice(2,9); }
@@ -18,47 +9,110 @@ function uid(){ return 'id_' + Math.random().toString(36).slice(2,9); }
 function ensureDefaults(){
   // تأكد من وجود الاعتمادات في localStorage فقط
   if(!localStorage.getItem('bp_creds')) localStorage.setItem('bp_creds', JSON.stringify({user:'younes', pass:'younes'}));
+  
+  // تأكد من وجود إعدادات أيام العمل الافتراضية
+  if(!localStorage.getItem('bp_workdays')) {
+    const defaultWorkDays = [
+      {dayOfWeek: 0, dayName: 'Dimanche', capacity: 5},
+      {dayOfWeek: 2, dayName: 'Mardi', capacity: 5},
+      {dayOfWeek: 4, dayName: 'Jeudi', capacity: 5},
+      {dayOfWeek: 5, dayName: 'Vendredi', capacity: 3}
+    ];
+    localStorage.setItem('bp_workdays', JSON.stringify(defaultWorkDays));
+  }
 }
 ensureDefaults();
 
-// Days: 0=Dimanche,2=Mardi,4=Jeudi,5=Vendredi
+// Days: جميع أيام الأسبوع
 function dayLabelFromKey(key){ 
   const d=new Date(key+'T00:00:00'); 
   const dayMap = {
     0: typeof t === 'function' ? t('day.sunday') : 'Dimanche',
+    1: typeof t === 'function' ? t('day.monday') : 'Lundi',
     2: typeof t === 'function' ? t('day.tuesday') : 'Mardi',
+    3: typeof t === 'function' ? t('day.wednesday') : 'Mercredi',
     4: typeof t === 'function' ? t('day.thursday') : 'Jeudi',
-    5: typeof t === 'function' ? t('day.friday') : 'Vendredi'
+    5: typeof t === 'function' ? t('day.friday') : 'Vendredi',
+    6: typeof t === 'function' ? t('day.saturday') : 'Samedi'
   };
   const nm = dayMap[d.getDay()] || d.toLocaleDateString(); 
   const date = ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear(); 
   return nm + ' ' + date; 
 }
 function dayKeyFromDate(d){ const y=d.getFullYear(); const m=String(d.getMonth()+1).padStart(2,'0'); const day=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${day}`; }
-function getWorkingDays(next=180){ const res=[]; const t=new Date(); for(let i=0;i<next;i++){ const d=new Date(); d.setDate(t.getDate()+i); if([0,2,4,5].includes(d.getDay())) res.push(dayKeyFromDate(d)); } return res; }
-function capacity(key){ const d=new Date(key+'T00:00:00'); return d.getDay()===5?3:5; }
+
+// الحصول على أيام العمل المُكونة
+function getConfiguredWorkDays() {
+  const stored = localStorage.getItem('bp_workdays');
+  if (stored) {
+    return JSON.parse(stored);
+  }
+  return [];
+}
+
+// الحصول على قائمة أيام العمل القادمة بناءً على التكوين
+function getWorkingDays(next=180){ 
+  const workDaysConfig = getConfiguredWorkDays();
+  const allowedDays = workDaysConfig.map(w => w.dayOfWeek);
+  const res=[]; 
+  const t=new Date(); 
+  for(let i=0;i<next;i++){ 
+    const d=new Date(); 
+    d.setDate(t.getDate()+i); 
+    if(allowedDays.includes(d.getDay())) res.push(dayKeyFromDate(d)); 
+  } 
+  return res; 
+}
+
+// الحصول على السعة من التكوين
+function capacity(key){ 
+  const d=new Date(key+'T00:00:00'); 
+  const dayOfWeek = d.getDay();
+  const workDaysConfig = getConfiguredWorkDays();
+  const dayConfig = workDaysConfig.find(w => w.dayOfWeek === dayOfWeek);
+  return dayConfig ? dayConfig.capacity : 5;
+}
 
 // Announcements: only show admin-created and system (cancel/restore) on public page
 function pushAnnonce(text,type='user'){ const a=load(LS_KEYS.ANN); a.unshift({id:uid(), text, ts:nowISO(), type}); save(LS_KEYS.ANN,a); log('Annonce: '+text); renderAnnonces(); }
 function log(msg){ const j=load(LS_KEYS.JOUR); j.unshift({id:uid(), msg, ts:nowISO()}); save(LS_KEYS.JOUR,j); }
 
-// BOOKINGS
-function addBooking(name,surname,phone){
-  if(!name||!surname){ alert('Nom et Prénom requis'); return; }
+// BOOKINGS - الزبون يختار اليوم المحدد
+function addBooking(name, surname, phone, selectedDayKey){
+  if(!name || !surname){ alert('Nom et Prénom requis'); return false; }
+  if(!selectedDayKey){ alert('Veuillez choisir un jour'); return false; }
+  
   const bks = load(LS_KEYS.BOOK);
-  const counts = {}; bks.forEach(b=> counts[b.dayKey]=(counts[b.dayKey]||0)+1);
-  const days = getWorkingDays(180);
-  for(const k of days){ 
-    if((counts[k]||0) < capacity(k)){ 
-      const nb={id:uid(), name, surname, phone: phone||'', dayKey:k, dayLabel:dayLabelFromKey(k), inProgress:false, completed:false, createdAt:nowISO()}; 
-      bks.push(nb); 
-      save(LS_KEYS.BOOK,bks); 
-      const successMsg = (typeof t === 'function' ? t('reservation.success') : 'Réservé: ') + nb.dayLabel;
-      document.getElementById('resInfo') && (document.getElementById('resInfo').innerText=successMsg); 
-      return; 
-    } 
+  
+  // حساب عدد الحجوزات في اليوم المختار (بما فيها المكتملة)
+  const dayBookings = bks.filter(b => b.dayKey === selectedDayKey);
+  const dayCapacity = capacity(selectedDayKey);
+  
+  if(dayBookings.length >= dayCapacity){
+    alert('Ce jour est complet. Veuillez choisir un autre jour.');
+    return false;
   }
-  alert('Aucun créneau disponible');
+  
+  const nb = {
+    id: uid(), 
+    name, 
+    surname, 
+    phone: phone || '', 
+    dayKey: selectedDayKey, 
+    dayLabel: dayLabelFromKey(selectedDayKey), 
+    inProgress: false, 
+    completed: false, 
+    createdAt: nowISO()
+  }; 
+  
+  bks.push(nb); 
+  save(LS_KEYS.BOOK, bks); 
+  
+  const successMsg = (typeof t === 'function' ? t('reservation.success') : 'Réservé: ') + nb.dayLabel;
+  document.getElementById('resInfo') && (document.getElementById('resInfo').innerText = successMsg); 
+  
+  log('Nouvelle réservation: ' + name + ' ' + surname + ' - ' + nb.dayLabel);
+  return true;
 }
 
 // RENDER PUBLIC LIST grouped by day, show En cours badge (hide completed)
@@ -144,43 +198,21 @@ function renderAdminDays(){
   });
 }
 
-// delete booking with cascade auto-fill (entire queue advances)
+// delete booking - الحجز يُحذف فقط بدون تقديم تلقائي
 function deleteBooking(id){ 
   let bks = load(LS_KEYS.BOOK); 
   const b = bks.find(x=>x.id===id); 
   if(!b) return;
   
-  const deletedDay = b.dayKey;
+  // حذف الحجز فقط - الحجوزات الأخرى تبقى في أماكنها
   bks = bks.filter(x=>x.id!==id); 
   
-  // Cascade: advance entire queue across all days
-  const days = getWorkingDays(180);
-  const deletedDayIndex = days.indexOf(deletedDay);
-  
-  // Starting from deleted day, pull first person from each next day
-  for(let i = deletedDayIndex; i < days.length - 1; i++){
-    const currentDay = days[i];
-    const nextDay = days[i + 1];
-    
-    const currentDayBookings = bks.filter(x => x.dayKey === currentDay && !x.completed);
-    const nextDayBookings = bks.filter(x => x.dayKey === nextDay && !x.completed);
-    
-    // If current day is not full and next day has people, move first person
-    if(currentDayBookings.length < capacity(currentDay) && nextDayBookings.length > 0){
-      const personToMove = nextDayBookings[0];
-      const oldDay = personToMove.dayKey;
-      personToMove.dayKey = currentDay;
-      personToMove.dayLabel = dayLabelFromKey(currentDay);
-      pushSystem('Auto-avancement: ' + personToMove.name + ' de ' + dayLabelFromKey(oldDay) + ' → ' + dayLabelFromKey(currentDay));
-    }
-  }
-  
-  save(LS_KEYS.BOOK,bks); 
-  pushSystem('Suppression: réservation supprimée (' + (b? b.name+' '+b.surname : id) + ')'); 
+  save(LS_KEYS.BOOK, bks); 
+  pushSystem('Suppression: réservation supprimée (' + (b ? b.name + ' ' + b.surname : id) + ')'); 
   renderAdminDays(); 
   renderList(); 
   renderAnnonces(); 
-  log('Suppression reservation '+id); 
+  log('Suppression reservation ' + id); 
 }
 
 // promote - move earlier in array among same-day entries
@@ -682,5 +714,174 @@ function closeMobileMenu() {
   document.body.style.overflow = '';
 }
 
+// ========== إدارة أيام العمل ==========
+
+// عرض قائمة أيام العمل المُكونة
+function renderWorkingDaysConfig() {
+  const container = document.getElementById('workingDaysList');
+  if (!container) return;
+  
+  const workDays = getConfiguredWorkDays();
+  container.innerHTML = '';
+  
+  if (workDays.length === 0) {
+    container.innerHTML = '<p class="muted">Aucun jour de travail configuré</p>';
+    return;
+  }
+  
+  // ترتيب حسب رقم اليوم
+  workDays.sort((a, b) => a.dayOfWeek - b.dayOfWeek);
+  
+  const dayNames = {
+    0: 'Dimanche',
+    1: 'Lundi',
+    2: 'Mardi',
+    3: 'Mercredi',
+    4: 'Jeudi',
+    5: 'Vendredi',
+    6: 'Samedi'
+  };
+  
+  workDays.forEach(day => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.background = 'rgba(202, 164, 60, 0.05)';
+    card.style.borderLeft = '3px solid var(--gold1)';
+    card.style.marginBottom = '15px';
+    
+    card.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <div style="flex: 1; min-width: 200px;">
+          <div style="font-size: 20px; font-weight: bold; color: var(--gold-bright); margin-bottom: 8px;">
+            📅 ${dayNames[day.dayOfWeek]}
+          </div>
+          <div class="muted" style="font-size: 14px;">
+            Capacité: <strong style="color: var(--gold1);">${day.capacity}</strong> clients
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-direction: column;">
+          <button onclick="editDayCapacity(${day.dayOfWeek})" style="background: rgba(40, 167, 69, 0.8);">
+            <span>Modifier capacité</span>
+          </button>
+          <button onclick="if(confirm('Supprimer ce jour de travail?')) removeWorkingDay(${day.dayOfWeek})" style="background: rgba(220, 53, 69, 0.8);">
+            <span>Supprimer</span>
+          </button>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+// إضافة يوم عمل جديد
+function addWorkingDay() {
+  const dayNames = {
+    0: 'Dimanche',
+    1: 'Lundi',
+    2: 'Mardi',
+    3: 'Mercredi',
+    4: 'Jeudi',
+    5: 'Vendredi',
+    6: 'Samedi'
+  };
+  
+  const workDays = getConfiguredWorkDays();
+  const existingDays = workDays.map(w => w.dayOfWeek);
+  
+  // إنشاء قائمة الأيام المتاحة
+  const availableDays = [];
+  for (let i = 0; i < 7; i++) {
+    if (!existingDays.includes(i)) {
+      availableDays.push({ num: i, name: dayNames[i] });
+    }
+  }
+  
+  if (availableDays.length === 0) {
+    alert('Tous les jours de la semaine sont déjà configurés!');
+    return;
+  }
+  
+  const options = availableDays.map(d => `${d.num}. ${d.name}`).join('\n');
+  const choice = prompt(`Choisir le jour (numéro):\n${options}`);
+  
+  if (choice === null) return;
+  
+  const dayNum = parseInt(choice);
+  if (isNaN(dayNum) || dayNum < 0 || dayNum > 6 || existingDays.includes(dayNum)) {
+    alert('Choix invalide');
+    return;
+  }
+  
+  const capacity = prompt('Capacité (nombre de clients):', '5');
+  if (capacity === null) return;
+  
+  const cap = parseInt(capacity);
+  if (isNaN(cap) || cap < 1 || cap > 20) {
+    alert('Capacité invalide (1-20)');
+    return;
+  }
+  
+  workDays.push({
+    dayOfWeek: dayNum,
+    dayName: dayNames[dayNum],
+    capacity: cap
+  });
+  
+  localStorage.setItem('bp_workdays', JSON.stringify(workDays));
+  log(`Jour de travail ajouté: ${dayNames[dayNum]} (capacité: ${cap})`);
+  renderWorkingDaysConfig();
+  renderAdminDays();
+  renderList();
+  alert(`✅ ${dayNames[dayNum]} ajouté avec succès!`);
+}
+
+// حذف يوم عمل
+function removeWorkingDay(dayOfWeek) {
+  const dayNames = {
+    0: 'Dimanche',
+    1: 'Lundi',
+    2: 'Mardi',
+    3: 'Mercredi',
+    4: 'Jeudi',
+    5: 'Vendredi',
+    6: 'Samedi'
+  };
+  
+  let workDays = getConfiguredWorkDays();
+  workDays = workDays.filter(d => d.dayOfWeek !== dayOfWeek);
+  
+  localStorage.setItem('bp_workdays', JSON.stringify(workDays));
+  log(`Jour de travail supprimé: ${dayNames[dayOfWeek]}`);
+  renderWorkingDaysConfig();
+  renderAdminDays();
+  renderList();
+  alert(`✅ ${dayNames[dayOfWeek]} supprimé!`);
+}
+
+// تعديل سعة يوم
+function editDayCapacity(dayOfWeek) {
+  const workDays = getConfiguredWorkDays();
+  const day = workDays.find(d => d.dayOfWeek === dayOfWeek);
+  
+  if (!day) return;
+  
+  const newCapacity = prompt(`Nouvelle capacité pour ${day.dayName}:`, day.capacity);
+  if (newCapacity === null) return;
+  
+  const cap = parseInt(newCapacity);
+  if (isNaN(cap) || cap < 1 || cap > 20) {
+    alert('Capacité invalide (1-20)');
+    return;
+  }
+  
+  day.capacity = cap;
+  localStorage.setItem('bp_workdays', JSON.stringify(workDays));
+  log(`Capacité modifiée: ${day.dayName} → ${cap} clients`);
+  renderWorkingDaysConfig();
+  renderAdminDays();
+  renderList();
+  alert(`✅ Capacité mise à jour: ${cap} clients`);
+}
+
 // initial renderers for pages
-window.addEventListener('DOMContentLoaded', ()=>{ cleanPastDays(); renderList(); renderAnnonces(); setupTabs(); try{ renderCancelledDays(); renderAdminDays(); renderAdminAnns(); renderDebts(); renderAccounting(); populateDaySelect(); }catch(e){} });
+window.addEventListener('DOMContentLoaded', ()=>{ cleanPastDays(); renderList(); renderAnnonces(); setupTabs(); try{ renderCancelledDays(); renderAdminDays(); renderAdminAnns(); renderDebts(); renderAccounting(); renderWorkingDaysConfig(); populateDaySelect(); }catch(e){} });
