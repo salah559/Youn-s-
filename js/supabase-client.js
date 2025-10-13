@@ -9,7 +9,7 @@ function initSupabase() {
     console.error('❌ مكتبة Supabase غير محملة! تأكد من تحميل السكريبت في HTML');
     return null;
   }
-  
+
   if (!supabaseClient) {
     supabaseClient = supabase.createClient(
       SUPABASE_CONFIG.url,
@@ -17,7 +17,7 @@ function initSupabase() {
     );
     console.log('✅ تم الاتصال بقاعدة البيانات Supabase');
   }
-  
+
   return supabaseClient;
 }
 
@@ -26,20 +26,37 @@ function initSupabase() {
 // ====================
 
 async function getAllBookings() {
-  const client = initSupabase();
-  const { data, error } = await client
-    .from(SUPABASE_CONFIG.tables.bookings)
-    .select('*')
-    .eq('completed', false)
-    .order('dayKey', { ascending: true })
-    .order('createdAt', { ascending: true });
-  
-  if (error) {
+  try {
+    const client = initSupabase();
+    const { data, error } = await client
+      .from(SUPABASE_CONFIG.tables.bookings)
+      .select('*')
+      .order('"dayKey"', { ascending: true })
+      .order('"createdAt"', { ascending: true });
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
     console.error('خطأ في جلب الحجوزات:', error);
     return [];
   }
-  
-  return data || [];
+}
+
+async function getBookingsByDay(dayKey) {
+  try {
+    const client = initSupabase();
+    const { data, error } = await client
+      .from(SUPABASE_CONFIG.tables.bookings)
+      .select('*')
+      .eq('"dayKey"', dayKey)
+      .order('"createdAt"', { ascending: true });
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('خطأ في جلب الحجوزات:', error);
+    return [];
+  }
 }
 
 async function addBooking(booking) {
@@ -48,12 +65,12 @@ async function addBooking(booking) {
     .from(SUPABASE_CONFIG.tables.bookings)
     .insert([booking])
     .select();
-  
+
   if (error) {
     console.error('خطأ في إضافة حجز:', error);
     throw error;
   }
-  
+
   return data[0];
 }
 
@@ -64,12 +81,12 @@ async function updateBooking(id, updates) {
     .update(updates)
     .eq('id', id)
     .select();
-  
+
   if (error) {
     console.error('خطأ في تحديث الحجز:', error);
     throw error;
   }
-  
+
   return data[0];
 }
 
@@ -79,7 +96,7 @@ async function deleteBooking(id) {
     .from(SUPABASE_CONFIG.tables.bookings)
     .delete()
     .eq('id', id);
-  
+
   if (error) {
     console.error('خطأ في حذف الحجز:', error);
     throw error;
@@ -88,15 +105,15 @@ async function deleteBooking(id) {
 
 async function saveAllBookings(bookings) {
   const client = initSupabase();
-  
+
   // حذف جميع الحجوزات الحالية ثم إدراج الجديدة
   await client.from(SUPABASE_CONFIG.tables.bookings).delete().neq('id', '');
-  
+
   if (bookings.length > 0) {
     const { error } = await client
       .from(SUPABASE_CONFIG.tables.bookings)
       .insert(bookings);
-    
+
     if (error) {
       console.error('خطأ في حفظ الحجوزات:', error);
       throw error;
@@ -109,18 +126,19 @@ async function saveAllBookings(bookings) {
 // ====================
 
 async function getAllCancelledDays() {
-  const client = initSupabase();
-  const { data, error } = await client
-    .from(SUPABASE_CONFIG.tables.cancelled)
-    .select('*')
-    .order('ts', { ascending: false });
-  
-  if (error) {
+  try {
+    const client = initSupabase();
+    const { data, error } = await client
+      .from(SUPABASE_CONFIG.tables.cancelled)
+      .select('*')
+      .order('"ts"', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
     console.error('خطأ في جلب الأيام الملغاة:', error);
     return [];
   }
-  
-  return data || [];
 }
 
 async function addCancelledDay(cancelledDay) {
@@ -129,23 +147,25 @@ async function addCancelledDay(cancelledDay) {
     .from(SUPABASE_CONFIG.tables.cancelled)
     .insert([cancelledDay])
     .select();
-  
+
   if (error) {
     console.error('خطأ في إضافة يوم ملغى:', error);
     throw error;
   }
-  
+
   return data[0];
 }
 
 async function deleteCancelledDay(dayKey) {
-  const client = initSupabase();
-  const { error } = await client
-    .from(SUPABASE_CONFIG.tables.cancelled)
-    .delete()
-    .eq('dayKey', dayKey);
-  
-  if (error) {
+  try {
+    const client = initSupabase();
+    const { error } = await client
+      .from(SUPABASE_CONFIG.tables.cancelled)
+      .delete()
+      .eq('"dayKey"', dayKey);
+
+    if (error) throw error;
+  } catch (error) {
     console.error('خطأ في حذف اليوم الملغى:', error);
     throw error;
   }
@@ -161,12 +181,12 @@ async function getAllAnnouncements() {
     .from(SUPABASE_CONFIG.tables.annonces)
     .select('*')
     .order('ts', { ascending: false });
-  
+
   if (error) {
     console.error('خطأ في جلب الإعلانات:', error);
     return [];
   }
-  
+
   return data || [];
 }
 
@@ -176,12 +196,12 @@ async function addAnnouncement(announcement) {
     .from(SUPABASE_CONFIG.tables.annonces)
     .insert([announcement])
     .select();
-  
+
   if (error) {
     console.error('خطأ في إضافة إعلان:', error);
     throw error;
   }
-  
+
   return data[0];
 }
 
@@ -191,7 +211,7 @@ async function deleteAnnouncement(id) {
     .from(SUPABASE_CONFIG.tables.annonces)
     .delete()
     .eq('id', id);
-  
+
   if (error) {
     console.error('خطأ في حذف الإعلان:', error);
     throw error;
@@ -209,12 +229,12 @@ async function getAllJournal() {
     .select('*')
     .order('ts', { ascending: false })
     .limit(100);
-  
+
   if (error) {
     console.error('خطأ في جلب السجل:', error);
     return [];
   }
-  
+
   return data || [];
 }
 
@@ -224,12 +244,12 @@ async function addJournalEntry(entry) {
     .from(SUPABASE_CONFIG.tables.journal)
     .insert([entry])
     .select();
-  
+
   if (error) {
     console.error('خطأ في إضافة سجل:', error);
     throw error;
   }
-  
+
   return data[0];
 }
 
@@ -243,12 +263,12 @@ async function getAllIncome() {
     .from(SUPABASE_CONFIG.tables.income)
     .select('*')
     .order('ts', { ascending: false });
-  
+
   if (error) {
     console.error('خطأ في جلب الدخل:', error);
     return [];
   }
-  
+
   return data || [];
 }
 
@@ -258,12 +278,12 @@ async function addIncome(income) {
     .from(SUPABASE_CONFIG.tables.income)
     .insert([income])
     .select();
-  
+
   if (error) {
     console.error('خطأ في إضافة دخل:', error);
     throw error;
   }
-  
+
   return data[0];
 }
 
@@ -277,12 +297,12 @@ async function getAllDebt() {
     .from(SUPABASE_CONFIG.tables.debt)
     .select('*')
     .order('ts', { ascending: false });
-  
+
   if (error) {
     console.error('خطأ في جلب الديون:', error);
     return [];
   }
-  
+
   return data || [];
 }
 
@@ -292,12 +312,12 @@ async function addDebt(debt) {
     .from(SUPABASE_CONFIG.tables.debt)
     .insert([debt])
     .select();
-  
+
   if (error) {
     console.error('خطأ في إضافة دين:', error);
     throw error;
   }
-  
+
   return data[0];
 }
 
@@ -308,12 +328,12 @@ async function updateDebt(id, updates) {
     .update(updates)
     .eq('id', id)
     .select();
-  
+
   if (error) {
     console.error('خطأ في تحديث الدين:', error);
     throw error;
   }
-  
+
   return data[0];
 }
 
@@ -323,7 +343,7 @@ async function deleteDebt(id) {
     .from(SUPABASE_CONFIG.tables.debt)
     .delete()
     .eq('id', id);
-  
+
   if (error) {
     console.error('خطأ في حذف الدين:', error);
     throw error;
@@ -336,7 +356,7 @@ async function deleteDebt(id) {
 
 function subscribeToBookings(callback) {
   const client = initSupabase();
-  
+
   const subscription = client
     .channel('bookings-channel')
     .on(
@@ -348,13 +368,13 @@ function subscribeToBookings(callback) {
       }
     )
     .subscribe();
-  
+
   return subscription;
 }
 
 function subscribeToAnnouncements(callback) {
   const client = initSupabase();
-  
+
   const subscription = client
     .channel('announcements-channel')
     .on(
@@ -366,7 +386,7 @@ function subscribeToAnnouncements(callback) {
       }
     )
     .subscribe();
-  
+
   return subscription;
 }
 

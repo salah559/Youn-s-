@@ -311,9 +311,11 @@ button span {
 .client-name {
   flex: 1;
   font-weight: 500;
-  word-break: normal;
-  overflow-wrap: break-word;
-  white-space: normal;
+  word-break: keep-all;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 150px;
 }
 
 .client-actions {
