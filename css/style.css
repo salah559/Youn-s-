@@ -799,7 +799,8 @@ button span {
   
   .client-name {
     font-size: 14px;
-    word-break: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   
   /* Better spacing for admin forms */
