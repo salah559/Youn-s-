@@ -4,20 +4,27 @@
 This project is a professional hair salon booking management system designed with a modern user interface and interactive 3D background animations. It provides a public booking interface, a client list view, an announcements page, and a comprehensive admin panel. The system is designed for a single-salon operation, focusing on efficient appointment management, client-driven day selection, and a visually engaging user experience. The business vision is to offer a streamlined, visually appealing, and highly functional booking solution for hair salons, enhancing both client interaction and administrative efficiency.
 
 ## Recent Major Updates (October 2025)
+- **Replit Environment Setup** (October 13, 2025): Configured Python 3.11 server, workflow, and deployment settings
 - **Configurable Working Days**: Admin can now add, remove, and configure working days dynamically through the admin panel
 - **Per-Day Capacity Management**: Each working day can have its own capacity setting (1-20 clients)
 - **Client Day Selection**: Clients now choose their preferred booking day from available options instead of automatic assignment
 - **Fixed Booking Positions**: Bookings stay on the chosen day - no automatic rescheduling when other bookings are deleted
 - **Enhanced Admin Panel**: New "Jours de travail" tab for managing working days configuration
 
+## Replit Environment Setup
+- **Server**: Python 3.11 HTTP server (server.py) serving static files on port 5000
+- **Workflow**: Configured to run `python server.py` automatically
+- **Deployment**: VM deployment configured for production use
+- **Database**: Supabase (cloud PostgreSQL) configured with credentials in js/supabase-config.js
+
 ## User Preferences
-- Language: French (fr)
+- Language: French (fr) with Arabic support
 - Theme: Professional gold on black with modern effects
-- No database backend (localStorage only)
+- Database: Supabase (cloud) + localStorage fallback
 - Enhanced with Three.js 3D graphics
 
 ## System Architecture
-The application is a pure frontend system built with HTML, CSS, and Vanilla JavaScript, with all data stored client-side using `localStorage`.
+The application uses a Python server to serve static files and provide API endpoints, with frontend built in HTML, CSS, and Vanilla JavaScript. Data can be stored in both Supabase (cloud database) and localStorage (local fallback).
 
 ### UI/UX Decisions
 - **Theme**: Professional gold-on-black theme with modern effects, gradient animations, smooth transitions, hover effects, and backdrop blur.
