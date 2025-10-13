@@ -311,6 +311,9 @@ button span {
 .client-name {
   flex: 1;
   font-weight: 500;
+  word-break: normal;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 .client-actions {
